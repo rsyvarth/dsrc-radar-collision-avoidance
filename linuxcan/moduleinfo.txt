@@ -1,3 +1,0 @@
-module=canlib
-version=5_13_307
-hgid=4a90d5a4af33

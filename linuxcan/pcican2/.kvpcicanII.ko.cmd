@@ -1,1 +1,0 @@
-cmd_/home/phillip/linuxcan/pcican2/kvpcicanII.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/pcican2/kvpcicanII.ko /home/phillip/linuxcan/pcican2/kvpcicanII.o /home/phillip/linuxcan/pcican2/kvpcicanII.mod.o

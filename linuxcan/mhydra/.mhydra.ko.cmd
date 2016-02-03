@@ -1,1 +1,0 @@
-cmd_/home/phillip/linuxcan/mhydra/mhydra.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/mhydra/mhydra.ko /home/phillip/linuxcan/mhydra/mhydra.o /home/phillip/linuxcan/mhydra/mhydra.mod.o

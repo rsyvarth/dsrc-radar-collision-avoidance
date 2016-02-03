@@ -1,2 +1,0 @@
-/home/phillip/linuxcan/pciefd/kvpciefd.ko
-/home/phillip/linuxcan/pciefd/pciefd_hwif.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/pciefd.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/pciefd_packet.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/pciefd_rx_fifo.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/altera_avalon_epcs_flash_controller.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/altera_avalon_spi.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/epcs_commands.o /home/phillip/linuxcan/pciefd/Altera/HAL/src/pwm_util.o

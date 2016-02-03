@@ -1,1 +1,0 @@
-cmd_/home/phillip/linuxcan/pciefd/kvpciefd.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/pciefd/kvpciefd.ko /home/phillip/linuxcan/pciefd/kvpciefd.o /home/phillip/linuxcan/pciefd/kvpciefd.mod.o

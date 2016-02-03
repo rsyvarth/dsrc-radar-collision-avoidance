@@ -1,1 +1,0 @@
-cmd_/home/phillip/linuxcan/leaf/leaf.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/leaf/leaf.ko /home/phillip/linuxcan/leaf/leaf.o /home/phillip/linuxcan/leaf/leaf.mod.o

@@ -1,1 +1,0 @@
-cmd_/home/phillip/linuxcan/virtualcan/kvvirtualcan.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/virtualcan/kvvirtualcan.ko /home/phillip/linuxcan/virtualcan/kvvirtualcan.o /home/phillip/linuxcan/virtualcan/kvvirtualcan.mod.o
