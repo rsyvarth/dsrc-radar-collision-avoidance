@@ -10,9 +10,7 @@ For this project we will be using the linux version of CAN lib and the Python Li
 
 Once the drivers have been downloaded on on a linux distribution, run the following commands in order to install the derivers on your machine.
 
-`tar xzfv linuxcan.tar.gz`
-`mv linuxcan ~`
-`cd ~/linuxcan`
 `make`
+`sudo make install`
 
 After you have executed these commands, the Kvaser LeafLight v2 drivers should be properly installed on your machine.
