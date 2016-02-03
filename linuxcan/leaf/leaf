@@ -1,0 +1,83 @@
+#!/bin/bash
+# Kvaser CAN driver                     
+# leaf - start/stop leaf  and create/delete device files
+# Copyright (C) 2005 Kvaser AB - support@kvaser.com - www.kvaser.com  
+
+LOG=/usr/bin/logger
+AWK=/bin/awk
+GREP=/bin/grep
+MKNOD=/bin/mknod
+MODPROBE=/sbin/modprobe
+SLEEP=/bin/sleep
+
+#     
+# test kernel version
+#     
+kernel_ver=`uname -r | $AWK -F . '{print $2}'` 
+
+case $kernel_ver in
+   "6") kv_module_install=modprobe
+        ;;
+   *)   kv_module_install=insmod
+        ;;
+esac
+
+# Current hotplug loads module file automatically
+# /sbin/$kv_module_install leaf || exit 1
+
+#
+# Install 
+#
+$LOG -t $0 "Kvaser USB hotplug script"
+
+# Add leaf module
+if test $ACTION = 'add'
+then
+    $SLEEP 3 # Sleep a second or two to be sure that module init is executed
+    if  [ -e /proc/leaf ] 
+    then 
+	nrchan=`cat /proc/leaf | $GREP 'total channels' | cut -d' ' -f 3`
+	major=`cat /proc/devices | $GREP 'leaf' | cut -d' ' -f 1`
+        for (( n=0 ; $n<$nrchan; n++ )) ; do
+         p=`expr 2 + $nrchan - $n`
+ 	 minor=`cat /proc/leaf | $GREP 'minor numbers' | cut -d' ' -f $p`
+#	 $LOG -t $0 $major, $minor, $nrchan, $p, $n
+	 if [ ! -c /dev/leaf$minor ] ; then 
+	     $MKNOD /dev/leaf$minor c $major $minor
+	     $LOG -t $0 "Leaf device with minor $minor inserted"
+	     #if test -z $REMOVER ; then exit 0 ; fi
+             # The file $REMOVER (is unique for each usb device)
+             # is called by the HOTPLUG system on removal
+             # We have to write the uninstall script to it
+	     # When all devices are inserted at the same time, e.g. at start up
+	     # racing may happen, which means that device files
+             # can not be removed until the last device is removed and the 
+             # module is removed.
+	     # Try to remove the leaf module, if successful remove all leaf device files.
+	     echo "#!/bin/sh" >$REMOVER
+	     echo "$MODPROBE -r leaf" >>$REMOVER
+	     echo "$SLEEP 1" >>$REMOVER
+	     echo "if [ ! -e /proc/leaf ] ; then rm -f /dev/leaf* && $LOG -t $0 "Module leaf with minor device files removed" ; fi" >>$REMOVER
+	     chmod +x $REMOVER
+#	     exit 0
+	 fi
+	done
+	# We didn't not find any missing device files
+#	$LOG -t $0 "Didn't find any devices files to create"
+	exit 1
+    fi
+fi
+
+# Handle remove in another way just in case.
+if test $ACTION = 'remove' 
+then
+    # When all devices are inserted at the same time, e.g. at start up
+    # racing may happen, which means that device files
+    # can not be removed until the last device is removed and the 
+    # module is removed.
+    # Try to remove the leaf module, if successful remove all leaf device files.
+    $MODPROBE -r leaf
+    if [ ! -e /proc/leaf ] ; then rm -f /dev/leaf* && $LOG -t $0 "Module leaf with minor $minor removed" ; fi
+    exit 0
+fi
+exit 0

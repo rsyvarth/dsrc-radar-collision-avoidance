@@ -1,0 +1,13 @@
+#
+# Supported Kvaser Leaf CAN interfaces
+#
+# Kvaser USB_VENDOR_ID 0x0bfd
+
+# Kvaser  USB USBCAN2 PRODUCT ID      0x0004
+# Kvaser  USB USBCAN REVB PRODUCT ID  0x0002
+# Kvaser  USB MEMORATOR PRODUCT ID    0x0005
+
+# usb module      match_flags  idVendor idProduct bcdDevice_lo bcdDevice_hi bDeviceClass bDeviceSubClass bDeviceProtocol bInterfaceClass bInterfaceSubClass bInterfaceProtocol driver_info
+usbcanII          0x0003       0x0bfd   0x0004    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00               0x00               0x0
+usbcanII          0x0003       0x0bfd   0x0002    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00               0x00               0x0
+usbcanII          0x0003       0x0bfd   0x0005    0x0000       0x0000       0x00         0x00            0x00            0x00            0x00               0x00               0x0

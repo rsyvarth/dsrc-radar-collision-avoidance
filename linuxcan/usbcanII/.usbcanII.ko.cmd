@@ -1,0 +1,1 @@
+cmd_/home/phillip/linuxcan/usbcanII/usbcanII.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/usbcanII/usbcanII.ko /home/phillip/linuxcan/usbcanII/usbcanII.o /home/phillip/linuxcan/usbcanII/usbcanII.mod.o

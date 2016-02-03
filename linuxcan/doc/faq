@@ -1,0 +1,151 @@
+**********************************************
+Kvaser LINUX Drivers 
+**********************************************
+
+Frequently Asked Questions - FAQ
+
+(Also check ReleaseNotes for information about known problems.)
+
+
+--------------------------------------------------------------------------------
+Q1
+    After doing make/make install you get an error like:
+    
+    make: *** /usr/src/linux-something: No such file or directory. 
+    Stop.
+ 
+A1
+    This probably means that the kernel source either is not installed or that 
+    the path to the kernel source in the settings.mak file is incorrect. 
+    The path is typically /usr/src/linux-*the version of the kernel*. 
+    However there is often a link to the source directory that can be used 
+    (/usr/src/linux). 
+    
+    In Fedora there doesn't seem to be a link to the kernel source and it is not
+    in the *regular* place. In fedora core 4 (kernel 2.6.11) it can be found in
+    /usr/src/kernels/2.6.11-1.1369_FC4-i686
+    
+    The correct path should be entered here in the settings.mak file:
+    
+    #----------------------------------------
+    # Select kernel source folder
+    #----------------------------------------
+    KERNEL_SOURCE_DIR=/usr/src/linux-`uname -r`
+    
+    If the kernel source is not installed consult your Linux distribution help
+    files on howto do this. 
+    
+--------------------------------------------------------------------------------
+Q2
+    After doing make/make install you get an error like:
+    
+    make: *** No rule to make target '/usr/src/linux-something/config.mak'. Stop. 
+
+A2
+    This means that the driver build system got confused regarding where to find
+    the config.mak file (seen in openSUSE 10.1).
+
+    The absolute path to the top directory in the driver tree should then be
+    entered here in the settings.mak file:
+    
+    #----------------------------------------
+    # Select driver top directory
+    #----------------------------------------
+    DRIVER_TOP_DIR=/home/john/Sources/linuxcan_v2
+
+--------------------------------------------------------------------------------
+    
+Q3
+    Compilation succeeded but the driver will not install. You get an error like:
+    
+    installscript_lapcan_26.sh: line 13: cardctl: command not found
+    ...
+        
+A3
+    This probably means that cardctl are not in your path. It is usually found
+    in /sbin/.  Add this path to your path and then run make install again. 
+
+--------------------------------------------------------------------------------
+Q4
+    Compilation succeeded but the driver will not install. You get an error like:
+
+    Permission denied
+
+A4
+    To install the driver you have to be logged in as root. 
+    
+    
+--------------------------------------------------------------------------------
+Q5
+    I have compiled and installed everything but I still cannot get the drivers
+    to work.
+    
+A5.2
+    On some computers, the interrupts may not be set up properly. This can
+    normally be seen via 'cat /proc/interrupts', which may then show 0 in the
+    second column (interrupt count) for the Kvaser hardware even when messages
+    should have arrived.
+    If that is the case, try starting the kernel with the 'irqfixup' or 'irqpoll'
+    boot parameter. See the documentation for your Linux distribution on how to
+    do this (Often you edit a line beginning with 'kernel' in
+    /boot/grub/menu.lst, to do it permanently. For a temporary test you may be
+    able to do it by pressing ESC when the boot-loader is running and then edit
+    the corresponding line there before continuing the boot.).
+    Both 'irqfixup' and 'irqpoll' have a performance penalty for the kernel,
+    especially the latter, so it is preferable not to have to set them.
+    It may be possible to correct the interrupt setup by changing options in
+    the BIOS. For example, there is likely to be an option regarding plug&play
+    OS that it can be a good idea to set so that the BIOS does not do interrupt
+    assignments itself (Linux is plug&play capable). There could also be options
+    regarding ACPI that may affect things.
+
+--------------------------------------------------------------------------------
+Q6
+    Is SMP (or fully preemptible kernel) supported?
+
+A6
+    While SMP (and fully preemptible kernel) has seen significant
+    testing in v4.78alpha, it should still be considered experimental.
+    See ReleaseNotes.
+    To turn off SMP, use the 'nosmp', 'maxcpus=0', or 'maxcpus=1' kernel boot
+    parameters. It may also be possible to turn off CPU cores in the BIOS
+    setup. See A5.2 for more information.
+
+--------------------------------------------------------------------------------
+Q7
+    The drivers behave strangely, or make my system do so. What's happening?
+
+A7
+    Are you running with SMP or a fully preemptible kernel? If so, see Q6.
+    Most Linux distributions will default to an SMP install if you are using
+    a modern CPU such as P4, Core2 Duo/Quad, Athlon X2 etc.
+
+--------------------------------------------------------------------------------
+Q8
+    I am seeing erratic behaviour from my threaded CANlib application. Why?
+
+A8
+    Note that CANlib and the drivers require that a handle to a CAN circuit
+    is never used in more than one thread (simultaneously). In older versions
+    you may have gotten away with breaking this rule, but it is now enforced by
+    the drivers (it was never a safe thing to do, and the same applies to
+    the Windows drivers). Depending on what you do, this can for example cause
+    long delays when one thread is being locked out by another.
+
+--------------------------------------------------------------------------------
+Q9
+    While using SCHED_FIFO/RR threads and CAN transmits from my Kvaser PCI card
+    seem to behave strangely. What's going on?
+
+A9
+    Normally, the PCI drivers (pcican and pcicanII) use the kernel's default
+    work queue for handling transmits. This runs at a lower priority than your
+    SCHED_FIFO/RR threads and there is a risk of the transmits being starved
+    for CPU resources.
+    There is a "#define TRY_RT_QUEUE" in PciCanHwIf.h/PciCanIIHwIf.h which is
+    commented out. Activating it will cause the drivers to create their own
+    work queues, via create_rt_workqueue(). If your kernel does not support
+    that call, you will need to change the priority of the new queues yourself.
+    The pcicanII driver also has TRY_DIRECT_SEND, which can be used instead of
+    TRY_RT_QUEUE. It will bypass all driver queueing, but is unsafe if you can
+    not guarantee that the queues on the PCI card will never be filled up.

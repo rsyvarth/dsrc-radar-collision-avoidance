@@ -1,0 +1,1 @@
+cmd_/home/phillip/linuxcan/common/kvcommon.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/phillip/linuxcan/common/kvcommon.ko /home/phillip/linuxcan/common/kvcommon.o /home/phillip/linuxcan/common/kvcommon.mod.o
