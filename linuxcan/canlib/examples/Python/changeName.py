@@ -1,5 +1,4 @@
 import sys
-sys.path.append("C:/temp/Canlib_SDK_v5.9/Samples/Python")
 
 import kvrlib
 
