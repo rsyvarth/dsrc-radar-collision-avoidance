@@ -4,7 +4,14 @@ __pycache__/
 *$py.class
 
 # C extensions
-*.so
+*.so*
+*.o*
+*.cmd*
+*.order*
+*.mod*
+*.ko*
+*.leaf*
+*.symvers*
 
 # Distribution / packaging
 .Python
