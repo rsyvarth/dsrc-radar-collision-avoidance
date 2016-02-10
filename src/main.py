@@ -74,12 +74,13 @@ from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
 
 def main():
-    """Main application entry point"""
+    """ Main application entry point. """
     args = parse_args()
 
     logging.config.fileConfig('logger.ini')
     print_header()
-    # test_logger()
+    if args.test_logger:
+        test_logger()
 
     # Init the collision avoidance class
     collision_avoid = CollisionAvoidance()
@@ -93,10 +94,11 @@ def main():
         time.sleep(100)
 
 def parse_args():
-    """ Evaluate arguments passed to script """
+    """ Evaluate commandline arguments passed to script. """
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable radar logging (only affects live data)")
     parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging of (only affect live data)")
+    parser.add_argument('--test-logger', dest='test_logger', action='store_true', help="Test the logging created by Bryce")
 
     parser.add_argument('--load-dsrc-log', dest='dsrc_log_file', help="Path to the dsrc log file to use for emulation (If not passed we use live data)")
     parser.add_argument('--load-radar-log', dest='radar_log_file', help="Path to the radar log file to use for emulation (If not passed we use live data)")
@@ -105,7 +107,7 @@ def parse_args():
     return parser.parse_args()
 
 def print_header():
-    """Print out a fancy little header with some status info"""
+    """ Print out a fancy little header with some status info. """
     cl = canlib.canlib();
     channels = cl.getNumberOfChannels()
     logging.info("/-------------------------------------------------\\")
@@ -114,7 +116,7 @@ def print_header():
     logging.info("\-------------------------------------------------/\n")
 
 def test_logger():
-    """Test code that Bryce wrote to ensure logger was functioning"""
+    """ Test code that Bryce wrote to ensure logger was functioning """
     cl = canlib.canlib();
     logging.debug("canlib version: %s" % cl.getVersion())
     logging.info("you should see the version number in logs/canlib_all.log!")
