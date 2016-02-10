@@ -15,6 +15,7 @@ class DsrcDataParser(Thread):
         Thread.__init__(self)
         self.callback = callback
         self.log = log
+        self.logger = logging.getLogger('dsrc')
 
     def run(self):
         """ Start reading data from the DSRC API. """
@@ -26,7 +27,7 @@ class DsrcDataParser(Thread):
             data = [random.randint(0,100)]
             if self.log:
                 # goes to the DSRC log
-                logging.debug(data)
+                self.logger.debug(data)
 
             self.callback(self, data)
             time.sleep(random.random()*2)

@@ -21,6 +21,8 @@ class Combiner(object):
         self.dsrc_event_dispatcher = DsrcEventDispatcher(self.dsrc_data_callback, log=log_dsrc, log_file=dsrc_log_file)
         self.radar_event_dispatcher = RadarEventDispatcher(self.radar_data_callback, log=log_radar, log_file=radar_log_file)
 
+        self.logger = logging.getLogger('combined')
+
     def start(self):
         """ Start running the event dispatcher threads (we are ready to recieve data). """
         self.dsrc_event_dispatcher.start()
@@ -57,7 +59,7 @@ class Combiner(object):
             data = data + self.radar_data
 
         # sends logs to the combined file
-        logger.debug(data)
+        self.logger.debug(data)
 
         # Send updated information back to our callback function (Collision Avoidance)
         self.callback(data)

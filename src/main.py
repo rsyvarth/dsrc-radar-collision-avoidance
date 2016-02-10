@@ -67,18 +67,19 @@ Authors:
 import time
 import canlib
 import logging
-import logging.config
 import argparse
 
 from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
+from util.logger_conf import configure_logs
 
 def main():
     """ Main application entry point. """
     args = parse_args()
 
-    logging.config.fileConfig('logger.ini')
+    configure_logs()
     print_header()
+
     if args.test_logger:
         test_logger()
 
@@ -116,14 +117,15 @@ def print_header():
     logging.info("\-------------------------------------------------/\n")
 
 def test_logger():
-    """ Test code that Bryce wrote to ensure logger was functioning """
-    cl = canlib.canlib();
-    logging.debug("canlib version: %s" % cl.getVersion())
-    logging.info("you should see the version number in logs/canlib_all.log!")
-    logging.debug("this should not print to command line")
-    logging.info("this should print to command line")
-    logging.warning("this is a test warning")
-    logging.error("this is a test error")
+    """Test code that Bryce wrote to ensure logger was functioning"""
+    logger = logging.getLogger('dsrc')
+    logger.debug("hello DSRC!")
+    logger = logging.getLogger('radar')
+    logger.debug("hello radar!")
+    logger = logging.getLogger('combined')
+    logger.debug("hello combined!")
+    logger = logging.getLogger('debug')
+    logger.debug("hello debug!")
 
 if __name__ == "__main__":
     main()

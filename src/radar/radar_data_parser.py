@@ -14,6 +14,7 @@ class RadarDataParser(Thread):
         Thread.__init__(self)
         self.callback = callback
         self.log = log
+        self.logger = logging.getLogger('radar')
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
@@ -25,7 +26,7 @@ class RadarDataParser(Thread):
             data = [random.randint(0,100)]
             if self.log:
                 # goes the the Radar log file
-                logging.debug(data)
+                self.logger.debug(data)
 
             self.callback(self, data)
             time.sleep(random.random()*2)
