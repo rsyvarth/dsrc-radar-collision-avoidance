@@ -1,5 +1,6 @@
 from dsrc.dsrc_dispatcher import DsrcEventDispatcher
 from radar.radar_dispatcher import RadarEventDispatcher
+import logging
 
 class Combiner(object):
     """ Takes DSRC+Radar information and forms a single model of the environment.
@@ -54,6 +55,9 @@ class Combiner(object):
             data = data + self.dsrc_data
         if self.radar_data:
             data = data + self.radar_data
+
+        # sends logs to the combined file
+        logger.debug(data)
 
         # Send updated information back to our callback function (Collision Avoidance)
         self.callback(data)

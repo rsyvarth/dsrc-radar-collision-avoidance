@@ -24,6 +24,7 @@ class RadarDataParser(Thread):
         while True:
             data = [random.randint(0,100)]
             if self.log:
+                # goes the the Radar log file
                 logging.debug(data)
 
             self.callback(self, data)

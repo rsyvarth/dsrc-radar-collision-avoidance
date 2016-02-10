@@ -2,6 +2,7 @@ from threading import Thread
 import time
 import logging
 
+
 class DsrcDataParser(Thread):
     """ Poll DSRC API for new data, when new data is found pass along.
 
@@ -24,6 +25,7 @@ class DsrcDataParser(Thread):
         while True:
             data = [random.randint(0,100)]
             if self.log:
+                # goes to the DSRC log
                 logging.debug(data)
 
             self.callback(self, data)
