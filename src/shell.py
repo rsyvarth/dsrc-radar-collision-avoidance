@@ -71,14 +71,18 @@ import logging.config
 import argparse
 
 from combiner.combiner_base import Combiner
-from collision import collision_avoid
+from collision.collision_avoid import CollisionAvoidance
 
 def main():
+    """Main application entry point"""
     args = parse_args()
 
     logging.config.fileConfig('logger.ini')
     print_header()
     # test_logger()
+
+    # Init the collision avoidance class
+    collision_avoid = CollisionAvoidance()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
     combiner = Combiner(collision_avoid.new_data_handler, args.log_dsrc, args.log_radar, args.dsrc_log_file, args.radar_log_file)
@@ -89,6 +93,7 @@ def main():
         time.sleep(100)
 
 def parse_args():
+    """Define the arguments for the shell and parse passed aruments"""
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable radar logging (only affects live data)")
     parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging of (only affect live data)")
@@ -100,6 +105,7 @@ def parse_args():
     return parser.parse_args()
 
 def print_header():
+    """Print out a fancy little header with some status info"""
     cl = canlib.canlib();
     channels = cl.getNumberOfChannels()
     logging.info("/-------------------------------------------------\\")
@@ -108,6 +114,7 @@ def print_header():
     logging.info("\-------------------------------------------------/\n")
 
 def test_logger():
+    """Test code that Bryce wrote to ensure logger was functioning"""
     cl = canlib.canlib();
     logging.debug("canlib version: %s" % cl.getVersion())
     logging.info("you should see the version number in logs/canlib_all.log!")
