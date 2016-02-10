@@ -4,6 +4,7 @@ import sys
 import struct
 import logging
 import inspect
+import time
 
 # -------------------
 # Canlib constants
@@ -1412,10 +1413,15 @@ if __name__ == '__main__':
     except (canError) as ex:
         print(ex)
 
+    message = [0,0,0,0,0,0,191,0]
+    print("about to send the on message")
+    ch1.write(1265,message,8)
+    time.sleep(5)
+    print("done sending the on message")
     while True:
         try:
             msgId, msg, dlc, flg, time = ch1.read()
-            print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
+            print("message 1 %9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
             for i in range(dlc):
                 msg[i] = (msg[i]+1) % 256
                 print(msg, ''.join('{:02x}'.format(x) for x in msg))
