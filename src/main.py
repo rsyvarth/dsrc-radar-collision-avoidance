@@ -12,14 +12,14 @@ Usage:
     requirements please go to the README.md file in root of this repository.
 
     For details on how to use this application in particular please try running
-    `python shell.py -h` to display the help text.
+    `python main.py -h` to display the help text.
 
 Software Overview:
     This application is split into multiple parts in order to facilitate
     component swapping and reuse. An overview of each component is provided
     below.
 
-    Shell - Simple setup script for our application. It manages initializing our
+    Main - Simple setup script for our application. It manages initializing our
     packages and parsing of some command line arguments.
 
     Collision - This package is included mainly for the purpose of demonstration.
@@ -93,7 +93,7 @@ def main():
         time.sleep(100)
 
 def parse_args():
-    """Define the arguments for the shell and parse passed aruments"""
+    """ Evaluate arguments passed to script """
     parser = argparse.ArgumentParser()
     parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable radar logging (only affects live data)")
     parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging of (only affect live data)")
