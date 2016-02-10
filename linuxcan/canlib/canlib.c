@@ -768,7 +768,6 @@ canReadWait (const CanHandle hnd, long *id, void *msgPtr, unsigned int *dlc,
 {
   int i;
   HandleData *hData;
-
   hData = findHandle(hnd);
   if (hData == NULL) {
     return canERR_INVHANDLE;

@@ -1046,6 +1046,7 @@ class canChannel(object):
             msg = bytes(msg)
         if dlc is None:
             dlc = len(msg)
+	print("This is message: ", msg)
         self.dll.canWrite(self.handle, id_, msg, dlc, flag)
 
     def writeWait(self, id_, msg, flag=0, timeout=0):
