@@ -2,7 +2,7 @@
 from util.logger import LogParser
 
 class RadarLogParser(LogParser):
-    """Radar Log Parser - Reads the provided log file and emits the logs in real-time
+    """ Reads the provided log file and emits the logs in real-time
 
     Extends: util.logger.LogParser
     """

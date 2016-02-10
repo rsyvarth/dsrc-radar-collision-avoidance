@@ -3,7 +3,7 @@ from radar.radar_data_parser import RadarDataParser
 from radar.radar_log_parser import RadarLogParser
 
 class RadarEventDispatcher(object):
-    """Radar Event Dispatcher - The interface between our data parsers and the combiner
+    """ The interface between our data parsers and the combiner
 
     The dispatcher instantiates the proper parser for the current environment.
     Once the correct parser has been created we manage the parser thread which

@@ -1,7 +1,7 @@
 import logging
 
 class CollisionAvoidance(object):
-    """Collision Avoidance - takes combined data and displays predicted collisions
+    """ Takes combined data and displays predicted collisions.
 
     This package is included mainly for the purpose of demonstration.
     It takes the information provided by our Combiner and calculates any predicted

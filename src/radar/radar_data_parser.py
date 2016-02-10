@@ -3,7 +3,7 @@ import time
 import logging
 
 class RadarDataParser(Thread):
-    """Radar Data Parser - Listens for new Radar messages over CAN and parses for the dispatcher
+    """ Listens for new Radar messages over CAN and parses for the dispatcher
 
     This parser reads messages from the CAN Bus using the Kvaser USB Python SKD
     and formats Radar information into a python object. Then we send the data
