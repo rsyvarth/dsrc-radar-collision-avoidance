@@ -1,6 +1,7 @@
 from threading import Thread
 import time, sys, logging, json, canlib, random
 
+
 class RadarDataParser(Thread):
     """ Listens for new Radar messages over CAN and parses for the dispatcher.
 
@@ -150,9 +151,27 @@ class RadarDataParser(Thread):
         #             separators=(',',':')))
         #         )
 
+    #message ID x4E1 or 1249
     def status_two(self, msg):
+#        Byte 0 bits 0-1 - Rolling Count
+#        Byte 0 bits 2-7 - Maximum tracks (number of objects of interest)
+#        Byte 1 bit 7 - Overheat Error
+#        Byte 1 bit 6 - Range Perf Error
+#        Byte 1 bit 5 - Internal Error
+#        Byte 1 bit 4 - XCVR Operational
+#        0 - Not radiating, 1 - radiating
+#        Byte 1 bit 3 - Raw Data Mode
+#        Byte 1 bits 0-2, Byte 2 - Steering Angle Ack
+#        Byte 3 - Temperature
+#        Byte 4 bits 2-7 - Speed Comp Factor
+#        Byte 4 bits 0-1 - Grouping Mode
+#        Byte 5 - Yaw Rate Bias
+#        Bytes 6-7 - SW Version DSP
+        rolling_count = msg[0] & 0x03
+
         pass
 
+    #message ID 500-53F or 1280-1343
     def track_msg(self, msgId, msg):
         #Going to start with track width
         track_width = msg[4] & 0x3C
