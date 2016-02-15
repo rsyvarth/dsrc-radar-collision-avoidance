@@ -86,7 +86,7 @@ typedef struct HandleData
   char               deviceName[DEVICE_NAME_LEN];
   char               deviceOfficialName[150];
   int                channelNr; // Absolute ch nr i.e. it can be >2 for lapcan
-  canHandle          handle;
+  CanHandle          handle;
   unsigned char      isExtended;
   unsigned char      fdMode;
   unsigned char      acceptLargeDlc;

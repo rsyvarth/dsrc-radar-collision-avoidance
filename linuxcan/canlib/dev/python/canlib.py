@@ -381,7 +381,7 @@ class canlib(object):
         self.dll.canBusOff.argtypes = [ct.c_int]
         self.dll.canBusOff.errcheck = self._canErrorCheck
 
-        self.dll.canTranslateBaud.atgtypes = [ct.POINTER(ct.c_long),
+        self.dll.canTranslateBaud.argtypes = [ct.POINTER(ct.c_long),
                                               ct.POINTER(ct.c_uint),
                                               ct.POINTER(ct.c_uint),
                                               ct.POINTER(ct.c_uint),
