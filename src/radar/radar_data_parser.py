@@ -140,4 +140,6 @@ class RadarDataParser(Thread):
             time.sleep(random.random()*2)
 		'''
 
-	
+	def status_two(self, msg):
+
+	def track_msg(self, msgId, msg):
