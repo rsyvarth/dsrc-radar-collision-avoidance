@@ -125,7 +125,6 @@ class RadarDataParser(Thread):
                 msgId, msg, dlc, flg, time = ch1.read()
                 print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
                 print(msg, ''.join('{:02x}'.format(x) for x in msg))
-                ch1.write(msgId, msg, flg)
             except (canlib.canNoMsg) as ex:
                 None
             except (canlib.canError) as ex:
