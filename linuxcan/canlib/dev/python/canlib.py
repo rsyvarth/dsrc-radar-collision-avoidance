@@ -1423,9 +1423,9 @@ if __name__ == '__main__':
         try:
             msgId, msg, dlc, flg, time = ch1.read()
             print("message 1 %9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
-            for i in range(dlc):
-                msg[i] = (msg[i]+1) % 256
-                print(msg, ''.join('{:02x}'.format(x) for x in msg))
+            #for i in range(dlc):
+                #msg[i] = (msg[i]+1) % 256
+            print(msg, ''.join('{:02x}'.format(x) for x in msg))
             ch1.write(msgId, msg, flg)
         except (canNoMsg) as ex:
             None
