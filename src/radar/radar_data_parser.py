@@ -15,7 +15,7 @@ class RadarDataParser(Thread):
         self.callback = callback
         self.log = log
         self.logger = logging.getLogger('radar')
-
+        self.data = {}
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
@@ -167,8 +167,10 @@ class RadarDataParser(Thread):
 #        Byte 4 bits 0-1 - Grouping Mode
 #        Byte 5 - Yaw Rate Bias
 #        Bytes 6-7 - SW Version DSP
-        rolling_count = msg[0] & 0x03
-
+        self.data["rolling_count"] = msg[0] & 0x03
+        self.data["radiating"] = (msg[1] & 0x10) >> 4
+        self.data["steering_angle"] = msg[1] & 0x07
+        self.data["yaw_rate_bias"] = msg[5]
         pass
 
     #message ID 500-53F or 1280-1343
