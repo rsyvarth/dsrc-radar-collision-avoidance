@@ -1,6 +1,5 @@
 from threading import Thread
-import time
-import logging
+import time, logging, json
 
 
 class DsrcDataParser(Thread):
@@ -26,8 +25,12 @@ class DsrcDataParser(Thread):
         while True:
             data = [random.randint(0,100)]
             if self.log:
-                # goes to the DSRC log
-                self.logger.debug(data)
+                # sends JSON data to dsrc log file
+                self.logger.debug(str(
+                    json.dumps(data,
+                    separators=(',',':')))
+                )
 
             self.callback(self, data)
             time.sleep(random.random()*2)
+

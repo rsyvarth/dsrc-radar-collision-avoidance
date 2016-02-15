@@ -1,5 +1,6 @@
 from dsrc.dsrc_dispatcher import DsrcEventDispatcher
 from radar.radar_dispatcher import RadarEventDispatcher
+import json
 import logging
 
 class Combiner(object):
@@ -59,7 +60,10 @@ class Combiner(object):
             data = data + self.radar_data
 
         # sends logs to the combined file
-        self.logger.debug(data)
+        self.logger.debug(str(
+                    json.dumps(data,
+                    separators=(',',':')))
+                )
 
         # Send updated information back to our callback function (Collision Avoidance)
         self.callback(data)

@@ -1,8 +1,5 @@
 from threading import Thread
-import time
-import sys
-import logging
-import sys
+import time, sys, logging, json, canlib, random
 
 class RadarDataParser(Thread):
     """ Listens for new Radar messages over CAN and parses for the dispatcher.
@@ -11,18 +8,18 @@ class RadarDataParser(Thread):
     and formats Radar information into a python object. Then we send the data
     along to the event dispatcher.
     """
-    def __init__(self, callback = None, log = True):
+    def __init__(self, callback=None, log=True):
         """ Initialize the data parser, connect to the can bus. """
         Thread.__init__(self)
         self.callback = callback
         self.log = log
         self.logger = logging.getLogger('radar')
 
+
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
         # NOTE currently this just generates random numbers and sends them to the
         # dispatcher at random intervals
-        import canlib
         msgToFunc = {
             1248: "First Message",
             1249: self.status_two,
@@ -136,17 +133,22 @@ class RadarDataParser(Thread):
                 None
             except (canlib.canError) as ex:
                 print(ex)
-        '''
-        import random
-        time.sleep(random.random()*2)
-        while True:
-        data = [random.randint(0,100)]
-        if self.log:
-        # goes the the Radar log file
-        self.logger.debug(data)
-        self.callback(self, data)
-        time.sleep(random.random()*2)
-        '''
+
+        # time.sleep(random.random()*2)
+        # while True:
+        # data = [random.randint(0,100)]
+        # if self.log:
+        # # goes the the Radar log file
+        # self.logger.debug(data)
+        # self.callback(self, data)
+        # time.sleep(random.random()*2)
+        #     data = [random.randint(0,100)]
+        #     if self.log:
+        #         # sends JSON data to radar log file
+        #         self.logger.debug(str(
+        #             json.dumps(data,
+        #             separators=(',',':')))
+        #         )
 
     def status_two(self, msg):
         pass
