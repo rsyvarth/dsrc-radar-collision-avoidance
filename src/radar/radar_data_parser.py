@@ -2,6 +2,7 @@ from threading import Thread
 import time
 import sys
 import logging
+import sys
 
 class RadarDataParser(Thread):
     """ Listens for new Radar messages over CAN and parses for the dispatcher.
@@ -110,14 +111,15 @@ class RadarDataParser(Thread):
         try:
             ch1 = cl.openChannel(ch, canlib.canOPEN_ACCEPT_VIRTUAL)
             print("Using channel: %s, EAN: %s" % (ch1.getChannelData_Name(),
-                                              ch1.getChannelData_EAN()))
+            ch1.getChannelData_EAN()))
 
             ch1.setBusOutputControl(canlib.canDRIVER_NORMAL)
             ch1.setBusParams(canlib.canBITRATE_500K)
             ch1.busOn()
         except (canlib.canError) as ex:
             print(ex)
-
+        message = [0,0,0,0,0,0,191,0]
+        ch1.write(1265,message,8)
         while True:
             try:
                 msgId, msg, dlc, flg, time = ch1.read()
@@ -132,13 +134,12 @@ class RadarDataParser(Thread):
         import random
         time.sleep(random.random()*2)
         while True:
-            data = [random.randint(0,100)]
-            if self.log:
-                # goes the the Radar log file
-                self.logger.debug(data)
-
-            self.callback(self, data)
-            time.sleep(random.random()*2)
+        data = [random.randint(0,100)]
+        if self.log:
+        # goes the the Radar log file
+        self.logger.debug(data)
+        self.callback(self, data)
+        time.sleep(random.random()*2)
         '''
 
     def status_two(self, msg):
