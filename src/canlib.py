@@ -380,7 +380,7 @@ class canlib(object):
         self.dll.canBusOff.argtypes = [ct.c_int]
         self.dll.canBusOff.errcheck = self._canErrorCheck
 
-        self.dll.canTranslateBaud.atgtypes = [ct.POINTER(ct.c_long),
+        self.dll.canTranslateBaud.argtypes = [ct.POINTER(ct.c_long),
                                               ct.POINTER(ct.c_uint),
                                               ct.POINTER(ct.c_uint),
                                               ct.POINTER(ct.c_uint),
@@ -1407,7 +1407,7 @@ if __name__ == '__main__':
                                               ch1.getChannelData_EAN()))
 
         ch1.setBusOutputControl(canDRIVER_NORMAL)
-        ch1.setBusParams(canBITRATE_1M)
+        ch1.setBusParams(canBITRATE_500K)
         ch1.busOn()
     except (canError) as ex:
         print(ex)

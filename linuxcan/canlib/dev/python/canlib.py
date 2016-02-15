@@ -1409,7 +1409,7 @@ if __name__ == '__main__':
                                               ch1.getChannelData_EAN()))
 
         ch1.setBusOutputControl(canDRIVER_NORMAL)
-        ch1.setBusParams(canBITRATE_1M)
+        ch1.setBusParams(canBITRATE_500K)
         ch1.busOn()
     except (canError) as ex:
         print(ex)
