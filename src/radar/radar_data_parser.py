@@ -23,7 +23,7 @@ class RadarDataParser(Thread):
 	import canlib
 	cl = canlib.canlib()
 	channels = cl.getNumberOfChannels()
-	ch = 0;
+	ch = 0; #Hard-coded, might need to change!
 	if ch >= channels:
 	    print("Invalid channel number")
 	    sys.exit()
