@@ -22,10 +22,10 @@ class RadarDataParser(Thread):
         # NOTE currently this just generates random numbers and sends them to the
         # dispatcher at random intervals
         msgToFunc = {
-            1248: "First Message",
+            1248: self.status_one,
             1249: self.status_two,
-            1250: "Third Message",
-            1251: "Fourth Message",
+            1250: self.status_three,
+            1251: self.status_four,
             1280: self.track_msg,
             1281: self.track_msg,
             1282: self.track_msg,
@@ -90,14 +90,14 @@ class RadarDataParser(Thread):
             1341: self.track_msg,
             1342: self.track_msg,
             1343: self.track_msg,
-            1344: "Weird Message",
-            1488: "Validation Message 1",
-            1489: "Validation Message 2",
-            1508: "Another Message",
-            1509: "Another Message 2",
-            1510: "Another Message 3",
-            1511: "Another Message 4",
-            1512: "Another Message 5",
+            1344: self.we_dont_know_msg,
+            1488: self.validation_msg_one,
+            1489: self.validation_msg_two,
+            1508: self.additional_status_one,
+            1509: self.additional_status_two,
+            1510: self.additional_status_three,
+            1511: self.additional_status_four,
+            1512: self.additional_status_five,
         }
         cl = canlib.canlib()
         channels = cl.getNumberOfChannels()
@@ -179,3 +179,42 @@ class RadarDataParser(Thread):
         print(track_width)
         #Next we need to get the range
         #NOTE: This spans 2 bytes, so not sure how this works
+
+    def place_holder_msg(self, msg):
+        pass
+
+    def we_dont_know_msg(self, msg):
+        pass
+
+    def validation_msg_one(self, msg):
+        pass
+
+    def validation_msg_two(self, msg):
+        pass
+
+    def additional_status_one(self, msg):
+        pass
+
+    def additional_status_two(self, msg):
+        pass
+
+    def additional_status_three(self, msg):
+        pass
+
+    def additional_status_four(self, msg):
+        pass
+
+    def additional_status_five(self, msg):
+        pass
+
+    def status_one(self, msg):
+        pass
+
+    def status_two(self, msg):
+        pass
+
+    def status_three(self, msg):
+        pass
+
+    def status_four(self, msg):
+        pass
