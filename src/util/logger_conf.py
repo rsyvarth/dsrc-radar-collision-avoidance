@@ -126,8 +126,12 @@ def configure_logs():
     handler_combined = logger_combined.handlers
 
     # instantiate custom formatter
-    formatter_simple = USecFormatter(fmt='%(asctime)s %(message)s',datefmt='%Y-%m-%d,%H:%M:%S.%f')
-    formatter_debug = USecFormatter(fmt='[%(asctime)s] %(levelname)s [%(name)s: %(filename)s: %(lineno)s] %(message)s')
+    formatter_simple = USecFormatter(
+        fmt='%(asctime)s %(message)s',
+        datefmt='%Y-%m-%d,%H:%M:%S.%f')
+    formatter_debug = USecFormatter(
+        fmt='[%(asctime)s] %(levelname)s [%(name)s: %(filename)s: %(lineno)s] %(message)s',
+        datefmt='%Y-%m-%d,%H:%M:%S.%f')
 
     # update handlers with new formatter
     for h_dbg, h_dsrc, h_radar, h_combined in it.izip_longest(logger_dbg.handlers,
