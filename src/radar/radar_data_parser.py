@@ -131,7 +131,6 @@ class RadarDataParser(Thread):
                         msgToFunc[msgId](msgId, msg)
                     else:
                         print(msgId)
-                        
                         if (msgId == 1344):
                             msgToFunc[msgId](msg_counter, msg)
                             msg_counter += 1
@@ -140,8 +139,9 @@ class RadarDataParser(Thread):
                             msg_counter = 0
                         else:
                             msgToFunc[msgId](msg)
-                            
-                print(self.data)
+                            if (msgId == 1512):
+                                print(self.data)
+            #Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
                 None
             except (canlib.canError) as ex:
@@ -192,7 +192,7 @@ class RadarDataParser(Thread):
             self.data[track_id + "_track_moving_slow"] = ((msg[i] & 0x40) >> 6)
             self.data[track_id + "_track_moving"] = ((msg[i] & 0x20) >> 5)
             self.data[track_id + "_track_power"] = (msg[i] & 0x1F)
-            if msg_counter >= 64:
+            if ((msg_counter*7)+i) >= 64:
                 break
 
 #   message ID x5D0 or 1488
@@ -248,14 +248,14 @@ class RadarDataParser(Thread):
         self.data["system_power_mode"] = ((msg[3] & 0x07) >> 2)
         self.data["found_target"] = ((msg[4] & 0x80) >> 7)
         self.data["recommend_unconverge"] = ((msg[4] & 0x40) >> 6)
-        self.data["factory_align_status_1"] = (msg[4] & 0x38) >> 3)
+        self.data["factory_align_status_1"] = ((msg[4] & 0x38) >> 3)
         self.data["factory_align_status_2"] = (msg[4] & 0x03)
         self.data["factory_misalignment"] = msg[5]
         self.data["serv_align_updates_done"] = msg[6]
         self.data["vertical_misalignment"] = msg[7]
 
 #   message ID x5E6 or 1510
-    def additional_status_three(self, mg):
+    def additional_status_three(self, msg):
        #Byte x - Active Fault x
         self.data["active_fault_0"] = msg[0]
         self.data["active_fault_1"] = msg[1]
