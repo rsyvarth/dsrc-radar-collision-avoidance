@@ -242,7 +242,7 @@ class RadarDataParser(Thread):
         self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) #Spans multiple bytes
 
     def status_three(self, msg):
-        self.data["interface_version"] = (msg[0] & 0xF0) >> 4
+        self.data["interface_version"] = ((msg[0] & 0xF0) >> 4)
         self.data["hw_version"] = (msg[0] & 0x0F)
         self.data["sw_version_host"] = (msg[1] << 16 | msg[2] << 8 | msg[3]) #Spans multiple bytes
         self.data["serial_num"] = (msg[4] << 16 | msg[5] << 8 | msg[6]) #Spans multiple bytes
