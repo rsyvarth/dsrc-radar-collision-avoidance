@@ -131,6 +131,7 @@ class RadarDataParser(Thread):
                     else:
                         print(msgId)
                         msgToFunc[msgId](msg)
+                print(self.data)
             except (canlib.canNoMsg) as ex:
                 None
             except (canlib.canError) as ex:
@@ -152,27 +153,7 @@ class RadarDataParser(Thread):
         #             separators=(',',':')))
         #         )
 
-    #message ID x4E1 or 1249
-    def status_two(self, msg):
-#        Byte 0 bits 0-1 - Rolling Count
-#        Byte 0 bits 2-7 - Maximum tracks (number of objects of interest)
-#        Byte 1 bit 7 - Overheat Error
-#        Byte 1 bit 6 - Range Perf Error
-#        Byte 1 bit 5 - Internal Error
-#        Byte 1 bit 4 - XCVR Operational
-#        0 - Not radiating, 1 - radiating
-#        Byte 1 bit 3 - Raw Data Mode
-#        Byte 1 bits 0-2, Byte 2 - Steering Angle Ack
-#        Byte 3 - Temperature
-#        Byte 4 bits 2-7 - Speed Comp Factor
-#        Byte 4 bits 0-1 - Grouping Mode
-#        Byte 5 - Yaw Rate Bias
-#        Bytes 6-7 - SW Version DSP
-        self.data["rolling_count"] = msg[0] & 0x03
-        self.data["radiating"] = (msg[1] & 0x10) >> 4
-        self.data["steering_angle"] = msg[1] & 0x07
-        self.data["yaw_rate_bias"] = msg[5]
-        pass
+
 
     #message ID 500-53F or 1280-1343
     def track_msg(self, msgId, msg):
@@ -231,6 +212,7 @@ class RadarDataParser(Thread):
     def additional_status_five(self, msg):
         pass
 
+#   message ID x4E0 or 1248
     def status_one(self, msg):
         self.data["status_1_rolling_count"] = ((msg[0] & 0xC0) >> 6)
         self.data["dsp_timestamp"] = (((msg[0] & 0x3F) << 1) | ((msg[1] & 0x80) >> 7)) #Spans multiple bytes
@@ -241,6 +223,37 @@ class RadarDataParser(Thread):
         self.data["yaw_rate"] = ((msg[5] << 4) | ((msg[6] & 0xF0) >> 4)) #Spans multiple bytes
         self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) #Spans multiple bytes
 
+#   message ID x4E1 or 1249
+    def status_two(self, msg):
+#        Byte 0 bits 0-1 - Rolling Count
+#        Byte 0 bits 2-7 - Maximum tracks (number of objects of interest)
+#        Byte 1 bit 7 - Overheat Error
+#        Byte 1 bit 6 - Range Perf Error
+#        Byte 1 bit 5 - Internal Error
+#        Byte 1 bit 4 - XCVR Operational
+#        0 - Not radiating, 1 - radiating
+#        Byte 1 bit 3 - Raw Data Mode
+#        Byte 1 bits 0-2, Byte 2 - Steering Angle Ack
+#        Byte 3 - Temperature
+#        Byte 4 bits 2-7 - Speed Comp Factor
+#        Byte 4 bits 0-1 - Grouping Mode
+#        Byte 5 - Yaw Rate Bias
+#        Bytes 6-7 - SW Version DSP
+        self.data["status_two_rolling_count"] = (msg[0] & 0x03)
+        self.data["maximum_tracks"] = ((msg[0] & 0xFE) >> 1)
+        self.data["overheat_error"] = ((msg[1] & 0x80) >> 7)
+        self.data["range_perf_error"] = ((msg[1] & 0x40) >> 6)
+        self.data["internal_error"] = ((msg[1] & 0x20) >> 5)
+        self.data["radiating"] = ((msg[1] & 0x10) >> 4)
+        self.data["raw_data_mode"] = ((msg[1] & 0x08) >> 3)
+        self.data["steering_angle_ack"] = (((msg[1] & 0x07) << 8) | msg[2]) #spans multiple bytes
+        self.data["temperature"] = msg[3]
+        self.data["speed_comp_facter"] = ((msg[4] & 0xFC) >> 2)
+        self.data["grouping_mode"] = (msg[4] & 0x03)
+        self.data["yaw_rate_bias"] = msg[5]
+        self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7])
+
+#   message ID x4E2 or 1250
     def status_three(self, msg):
         self.data["interface_version"] = ((msg[0] & 0xF0) >> 4)
         self.data["hw_version"] = (msg[0] & 0x0F)
@@ -248,5 +261,32 @@ class RadarDataParser(Thread):
         self.data["serial_num"] = (msg[4] << 16 | msg[5] << 8 | msg[6]) #Spans multiple bytes
         self.data["sw_version_pld"] = msg[7]
 
+#   message ID x4E3 or 1251
     def status_four(self, msg):
-        pass
+#        Byte 0 bit 7 - Truck Target
+#        Byte 0 bit 6 - Only Grating Lobe
+#        Byte 0 bit 5 - Sidelobe Blockage
+#        Byte 0 bit 4 - Partial Blockage
+#        Byte 0 bits 2-3 - MR/LR Mode
+#        Byte 0 bits 0-1 - Rolling Count
+#        Byte 1 - Path ID ACC
+#        Byte 2 - Path ID CMBB Move
+#        Byte 3 - Path ID CMBB Stat
+#        Byte 4 - Path ID FCW Move
+#        Byte 5 - Path ID FCW Stat
+#        Byte 6 - Auto Align Angle
+#        Byte 7 - Path ID ACC Stat
+        self.data["truck_target"] = ((msg[0] & 0x80) >> 7)
+        self.data["only_grating_lobe"] = ((msg[0] & 0x40) >> 6)
+        self.data["sidelobe_blockage"] = ((msg[0] & 0x20) >> 5)
+        self.data["partial_blockage"] = ((msg[0] & 0x10) >> 4)
+        self.data["mr_lr_mode"] = ((msg[0] & 0x0C) >> 2)
+        self.data["status_4_rolling_count"] = (msg[0] & 0x03)
+        self.data["path_id_acc"] = msg[1]
+        self.data["path_id_cmbb_move"] = msg[2]
+        self.data["path_id_cmbb_stat"] = msg[3]
+        self.data["path_id_fcw_move"] = msg[4]
+        self.data["path_id_fcw_stat"] = msg[5]
+        self.data["auto_align_angle"] = msg[6]
+        self.data["path_id_acc_stat"] = msg[7]
+
