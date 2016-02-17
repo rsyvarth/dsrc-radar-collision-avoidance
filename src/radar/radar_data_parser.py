@@ -119,6 +119,7 @@ class RadarDataParser(Thread):
             print(ex)
         message = [0,0,0,0,0,0,191,0]
         ch1.write(1265,message,8)
+        msg_counter = 0 #Variable that keeps track of the iteration of msg 1344 we are on
         while True:
             try:
                 msgId, msg, dlc, flg, time = ch1.read()
@@ -130,7 +131,16 @@ class RadarDataParser(Thread):
                         msgToFunc[msgId](msgId, msg)
                     else:
                         print(msgId)
-                        msgToFunc[msgId](msg)
+                        
+                        if (msgId == 1344):
+                            msgToFunc[msgId](msg_counter, msg)
+                            msg_counter += 1
+                        elif (msgId > 1344 and msg_counter > 0):
+                            msgToFunc[msgId](msg)
+                            msg_counter = 0
+                        else:
+                            msgToFunc[msgId](msg)
+                            
                 print(self.data)
             except (canlib.canNoMsg) as ex:
                 None
@@ -172,8 +182,17 @@ class RadarDataParser(Thread):
         self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) #Spans multiple bytes
 
 #   message ID x540 or 1344
-    def we_dont_know_msg(self, msg):
-        pass
+    def we_dont_know_msg(self, msg_counter, msg):
+        self.data["weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
+        self.data["can_id_group"] = (msg[0] & 0x0F)
+        for i in range(1, 8):
+            track_id = str(msg_counter+i)
+            self.data[track_id + "_track_moving_fast"] = ((msg[i] & 0x80) >> 7)
+            self.data[track_id + "_track_moving_slow"] = ((msg[i] & 0x40) >> 6)
+            self.data[track_id + "_track_moving"] = ((msg[i] & 0x20) >> 5)
+            self.data[track_id + "_track_power"] = (msg[i] & 0x1F)
+            if msg_counter >= 64:
+                break
 
 #   message ID x5D0 or 1488
     def validation_msg_one(self, msg):
@@ -214,11 +233,24 @@ class RadarDataParser(Thread):
 
 #   message ID x5E7 or 1511
     def additional_status_four(self, msg):
-        pass
+        self.data["history_fault_0"] = msg[0]
+        self.data["history_fault_1"] = msg[1]
+        self.data["history_fault_2"] = msg[2]
+        self.data["history_fault_3"] = msg[3]
+        self.data["history_fault_4"] = msg[4]
+        self.data["history_fault_5"] = msg[5]
+        self.data["history_fault_6"] = msg[6]
+        self.data["history_fault_7"] = msg[7]
 
 #   message ID x5E8 or 1512
     def additional_status_five(self, msg):
-        pass
+        self.data["average_power_cw_blockage_algo"] = (msg[0] << 8 | ((msg[1] & 0xF0) >> 4)) #spans multiple bytes
+        self.data["sideslip_angle"] = (((msg[1] & 0x03) << 8) | msg[2]) #spans multiple bytes
+        self.data["serial_no_3rd_byte"] = msg[3]
+        self.data["water_spray_target_id"] = ((msg[4] & 0xFE) >> 1)
+        self.data["filtered_xohp_of_acc_cipv_target"] = ((msg[4] & 0x01) | msg[5])
+        self.data["path_id_acc_2"] = msg[6]
+        self.data["path_id_acc_3"] = msg[7]
 
 #   message ID x4E0 or 1248
     def status_one(self, msg):
