@@ -177,37 +177,47 @@ class RadarDataParser(Thread):
     #message ID 500-53F or 1280-1343
     def track_msg(self, msgId, msg):
         track_id = str(msgId-idBase)
-        self.data[track_id + "_track_oncoming"] = msg[0] & 0x01
-        self.data[track_id + "_track_group_changed"] = (msg[0] & 0x02) >> 1
-        self.data[track_id + "_track_lat_rate"] = (msg[0] & 0xFC) >> 2
-        self.data[track_id + "_track_status"] = (msg[1] & 0xE0) >> 5
-        self.data[track_id + "_track_angle"] = (msg[1] & 0x1F) << 5
-        self.data[track_id + "_track_angle"] += (msg[2] & 0xF8) >> 3 #Spans multiple bytes
-        self.data[track_id + "_track_range"] = (msg[2] & 0x07) << 8
-        self.data[track_id + "_track_range"] += msg[3] #Spans multiple bytes
-        self.data[track_id + "_track_bridge"] = (msg[4] & 0x80) >> 7
-        self.data[track_id + "_track_rolling_count"] = (msg[4] & 0x40) >> 6
-        self.data[track_id + "_track_width"] = (msg[4] & 0x3C) >> 2
-        self.data[track_id + "_track_range_accel"] = (msg[4] & 0x03) << 8
-        self.data[track_id + "_track_range_accel"] += msg[5] #Spans multiple bytes
-        self.data[track_id + "_track_med_range_mode"] = (msg[6] & 0xC0) >> 6
-        self.data[track_id + "_track_range_rate"] = (msg[6] & 0x3F) << 8
-        self.data[track_id + "_track_range_rate"] += msg[7]
-
-    def place_holder_msg(self, msg):
-        pass
+        self.data[track_id + "_track_oncoming"] = (msg[0] & 0x01)
+        self.data[track_id + "_track_group_changed"] = ((msg[0] & 0x02) >> 1)
+        self.data[track_id + "_track_lat_rate"] = ((msg[0] & 0xFC) >> 2)
+        self.data[track_id + "_track_status"] = ((msg[1] & 0xE0) >> 5)
+        self.data[track_id + "_track_angle"] = (((msg[1] & 0x1F) << 5) | ((msg[2] & 0xF8) >> 3)) #Spans multiple bytes
+        self.data[track_id + "_track_range"] = (((msg[2] & 0x07) << 8) | msg[3]) #Spans multiple bytes
+        self.data[track_id + "_track_bridge"] = ((msg[4] & 0x80) >> 7)
+        self.data[track_id + "_track_rolling_count"] = ((msg[4] & 0x40) >> 6)
+        self.data[track_id + "_track_width"] = ((msg[4] & 0x3C) >> 2)
+        self.data[track_id + "_track_range_accel"] = (((msg[4] & 0x03) << 8) | msg[5]) #Spans multiple bytes
+        self.data[track_id + "_track_med_range_mode"] = ((msg[6] & 0xC0) >> 6)
+        self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) #Spans multiple bytes
 
     def we_dont_know_msg(self, msg):
         pass
 
     def validation_msg_one(self, msg):
-        pass
+        #lr = Long Range
+        self.data["valid_lr_serial_no"] = msg[0]
+        self.data["valid_lr_range"] = (msg[1] << 8 | msg[2])
+        self.data["valid_lr_range_rate"] = (msg[3] << 8 | msg[4])
+        self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6])
+        self.data["valid_lr_power"] = msg[7]
 
     def validation_msg_two(self, msg):
-        pass
+        #mr = Mid Range
+        self.data["valid_mr_serial_no"] = msg[0]
+        self.data["valid_mr_range"] = (msg[1] << 8 | msg[2])
+        self.data["valid_mr_range_rate"] = (msg[3] << 8 | msg[4])
+        self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6])
+        self.data["valid_mr_power"] = msg[7]
 
     def additional_status_one(self, msg):
-        pass
+        self.data["switched_battery_ad"] = msg[0]
+        self.data["ignition_ad"] = msg[1]
+        self.data["thermistor_1_ad"] = msg[2]
+        self.data["thermistor_2_ad"] = msg[3]
+        self.data["5va_supply_ad"] = msg[4]
+        self.data["5vdx_supply_ad"] = msg[5]
+        self.data["3.3v_supply_ad"] = msg[6]
+        self.data["10v_supply_ad"] = msg[7]
 
     def additional_status_two(self, msg):
         pass
@@ -222,13 +232,21 @@ class RadarDataParser(Thread):
         pass
 
     def status_one(self, msg):
-        pass
-
-    def status_two(self, msg):
-        pass
+        self.data["status_1_rolling_count"] = ((msg[0] & 0xC0) >> 6)
+        self.data["dsp_timestamp"] = (((msg[0] & 0x3F) << 1) | ((msg[1] & 0x80) >> 7)) #Spans multiple bytes
+        self.data["comm_error"] = ((msg[1] & 0x40) >> 6)
+        self.data["radius_curvature"] = ((msg[1] & 0x3F) << 8)
+        self.data["radius_curvature"] = msg[2]
+        self.data["scan_index"] = ((msg[3] << 8) | msg[4]) #Spans multiple bytes
+        self.data["yaw_rate"] = ((msg[5] << 4) | ((msg[6] & 0xF0) >> 4)) #Spans multiple bytes
+        self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) #Spans multiple bytes
 
     def status_three(self, msg):
-        pass
+        self.data["interface_version"] = (msg[0] & 0xF0) >> 4
+        self.data["hw_version"] = (msg[0] & 0x0F)
+        self.data["sw_version_host"] = (msg[1] << 16 | msg[2] << 8 | msg[3]) #Spans multiple bytes
+        self.data["serial_num"] = (msg[4] << 16 | msg[5] << 8 | msg[6]) #Spans multiple bytes
+        self.data["sw_version_pld"] = msg[7]
 
     def status_four(self, msg):
         pass
