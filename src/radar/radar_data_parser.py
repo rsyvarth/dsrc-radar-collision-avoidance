@@ -183,10 +183,11 @@ class RadarDataParser(Thread):
 
 #   message ID x540 or 1344
     def we_dont_know_msg(self, msg_counter, msg):
-        self.data["weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
-        self.data["can_id_group"] = (msg[0] & 0x0F)
+        group = str(msg_counter)
+        self.data[group + "_weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
+        self.data[group + "_can_id_group"] = (msg[0] & 0x0F)
         for i in range(1, 8):
-            track_id = str(msg_counter+i)
+            track_id = str((msg_counter*7)+i)
             self.data[track_id + "_track_moving_fast"] = ((msg[i] & 0x80) >> 7)
             self.data[track_id + "_track_moving_slow"] = ((msg[i] & 0x40) >> 6)
             self.data[track_id + "_track_moving"] = ((msg[i] & 0x20) >> 5)
@@ -198,18 +199,18 @@ class RadarDataParser(Thread):
     def validation_msg_one(self, msg):
         #lr = Long Range
         self.data["valid_lr_serial_no"] = msg[0]
-        self.data["valid_lr_range"] = (msg[1] << 8 | msg[2])
-        self.data["valid_lr_range_rate"] = (msg[3] << 8 | msg[4])
-        self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6])
+        self.data["valid_lr_range"] = (msg[1] << 8 | msg[2]) #spans multiple bytes
+        self.data["valid_lr_range_rate"] = (msg[3] << 8 | msg[4]) #spans multiple bytes
+        self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6]) #spans multiple bytes
         self.data["valid_lr_power"] = msg[7]
 
 #   message ID x5D1 or 1489
     def validation_msg_two(self, msg):
         #mr = Mid Range
         self.data["valid_mr_serial_no"] = msg[0]
-        self.data["valid_mr_range"] = (msg[1] << 8 | msg[2])
-        self.data["valid_mr_range_rate"] = (msg[3] << 8 | msg[4])
-        self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6])
+        self.data["valid_mr_range"] = (msg[1] << 8 | msg[2]) #spans multiple bytes
+        self.data["valid_mr_range_rate"] = (msg[3] << 8 | msg[4]) #spans multiple bytes
+        self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6]) #spans multiple bytes
         self.data["valid_mr_power"] = msg[7]
 
 #   message ID x5E4 or 1508
