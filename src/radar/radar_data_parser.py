@@ -225,11 +225,45 @@ class RadarDataParser(Thread):
 
 #   message ID x5E5 or 1509
     def additional_status_two(self, msg):
-        pass
+#        Byte 0 - 1.8V supply A/D reading
+#        Byte 1 - -5V supply A/D reading
+#        Byte 2 - Wave Diff A/D reading
+#        Byte 3 bits 4-7 - DSP SW Version 3rd byte
+#        Byte 3 bit 3 - Vertical Align Updated
+#        Byte 3 bits 0-2 - System Power Mode
+#        1 - RADIATE_OFF, 2 - RADIATE_ON
+#        Byte 4 bit 7 - Found Target
+#        Byte 4 bit 6 - Recommend Unconverge
+#        Byte 4 bits 3-5 - Factory Align Status 1
+#        Byte 4 bits 0-2 - Factory Align Status 2
+#        Byte 5 - Factory Misalignment
+#        Byte 6 - Serv Align Updates Done
+#        Byte 7 - Vertical Misalignment
+        self.data["1.8v_supply_ad_reading"] = msg[0]
+        self.data["-5v_supply_ad_reading"] = msg[1]
+        self.data["wave_diff_ad_reading"] = msg[2]
+        self.data["dsp_sw_version_3rd_byte"] = ((msg[3] & 0xF0) >> 4)
+        self.data["vertical_align_updated"] = ((msg[3] & 0x08) >> 3)
+        self.data["system_power_mode"] = ((msg[3] & 0x07) >> 2)
+        self.data["found_target"] = ((msg[4] & 0x80) >> 7)
+        self.data["recommend_unconverge"] = ((msg[4] & 0x40) >> 6)
+        self.data["factory_align_status_1"] = (msg[4] & 0x38) >> 3)
+        self.data["factory_align_status_2"] = (msg[4] & 0x03)
+        self.data["factory_misalignment"] = msg[5]
+        self.data["serv_align_updates_done"] = msg[6]
+        self.data["vertical_misalignment"] = msg[7]
 
 #   message ID x5E6 or 1510
-    def additional_status_three(self, msg):
-        pass
+    def additional_status_three(self, mg):
+       #Byte x - Active Fault x
+        self.data["active_fault_0"] = msg[0]
+        self.data["active_fault_1"] = msg[1]
+        self.data["active_fault_2"] = msg[2]
+        self.data["active_fault_3"] = msg[3]
+        self.data["active_fault_4"] = msg[4]
+        self.data["active_fault_5"] = msg[5]
+        self.data["active_fault_6"] = msg[6]
+        self.data["active_fault_7"] = msg[7]
 
 #   message ID x5E7 or 1511
     def additional_status_four(self, msg):
@@ -291,7 +325,7 @@ class RadarDataParser(Thread):
         self.data["speed_comp_facter"] = ((msg[4] & 0xFC) >> 2)
         self.data["grouping_mode"] = (msg[4] & 0x03)
         self.data["yaw_rate_bias"] = msg[5]
-        self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7])
+        self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7]) #spans multiple bytes
 
 #   message ID x4E2 or 1250
     def status_three(self, msg):
