@@ -48,14 +48,14 @@ class DsrcDataParser(Thread):
                 "heading": int(''.join(message_bytes[23:25]), 16), # 2 byte heading
                 "wheel_angle": int(''.join(message_bytes[25:26]), 16), # 1 byte wheel angle
 
-                "accel_long": int(''.join(message_bytes[26:29]), 16), # 2 byte accel long
-                "accel_lat_set": int(''.join(message_bytes[29:31]), 16), # 2 byte lateral accel
-                "accel_vert": int(''.join(message_bytes[31:32]), 16), # 1 byte accel vert
-                "accel_yaw": int(''.join(message_bytes[32:34]), 16), # 2 byte accel yaw 
+                "accel_long": int(''.join(message_bytes[26:28]), 16), # 2 byte accel long
+                "accel_lat_set": int(''.join(message_bytes[28:30]), 16), # 2 byte lateral accel
+                "accel_vert": int(''.join(message_bytes[30:31]), 16), # 1 byte accel vert
+                "accel_yaw": int(''.join(message_bytes[31:33]), 16), # 2 byte accel yaw 
 
-                "breaks": int(''.join(message_bytes[34:36]), 16), # 2 byte break status
+                "breaks": int(''.join(message_bytes[33:35]), 16), # 2 byte break status
 
-                "vehicle_size": int(''.join(message_bytes[36:39]), 16) # 3 byte vehicle size 
+                "vehicle_size": int(''.join(message_bytes[35:38]), 16) # 3 byte vehicle size 
             }
             
             # If the first line contains Rx then this is a message from a remote DSRC
