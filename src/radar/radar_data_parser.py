@@ -3,33 +3,6 @@ import time, sys, logging, json, canlib, random
 
 idBase = 1279
 
-class TrackObject(object):
-    def __init__(self, msgId, msg):
-        self.data = {}
-        self.id = msgId - idBase
-        self.data["track_oncoming"] = msg[0] & 0x01
-        self.data["track_group_changed"] = (msg[0] & 0x02) >> 1
-        self.data["track_lat_rate"] = (msg[0] & 0xFC) >> 2
-        self.data["track_status"] = (msg[1] & 0xE0) >> 5
-        self.data["track_angle"] = (msg[1] & 0x1F) << 5
-        self.data["track_angle"] += (msg[2] & 0xF8) >> 3 #Spans multiple bytes
-        self.data["track_range"] = (msg[2] & 0x07) << 8
-        self.data["track_range"] += msg[3] #Spans multiple bytes
-        self.data["track_bridge"] = (msg[4] & 0x80) >> 7
-        self.data["track_rolling_count"] = (msg[4] & 0x40) >> 6
-        self.data["track_width"] = (msg[4] & 0x3C) >> 2
-        self.data["track_range_accel"] = (msg[4] & 0x03) << 8
-        self.data["track_range_accel"] += msg[5] #Spans multiple bytes
-        self.data["track_med_range_mode"] = (msg[6] & 0xC0) >> 6
-        self.data["track_range_rate"] = (msg[6] & 0x3F) << 8
-        self.data["track_range_rate"] += msg[7]
-
-    def get_id(self):
-        return self.id
-
-    def get_data(self):
-        return self.data
-
 class RadarDataParser(Thread):
     """ Listens for new Radar messages over CAN and parses for the dispatcher.
 
@@ -203,8 +176,23 @@ class RadarDataParser(Thread):
 
     #message ID 500-53F or 1280-1343
     def track_msg(self, msgId, msg):
-        track = TrackObject(msgId, msg)
-        self.data[track.get_id()] = track
+        track_id = str(msgId-idBase)
+        self.data[track_id + "_track_oncoming"] = msg[0] & 0x01
+        self.data[track_id + "_track_group_changed"] = (msg[0] & 0x02) >> 1
+        self.data[track_id + "_track_lat_rate"] = (msg[0] & 0xFC) >> 2
+        self.data[track_id + "_track_status"] = (msg[1] & 0xE0) >> 5
+        self.data[track_id + "_track_angle"] = (msg[1] & 0x1F) << 5
+        self.data[track_id + "_track_angle"] += (msg[2] & 0xF8) >> 3 #Spans multiple bytes
+        self.data[track_id + "_track_range"] = (msg[2] & 0x07) << 8
+        self.data[track_id + "_track_range"] += msg[3] #Spans multiple bytes
+        self.data[track_id + "_track_bridge"] = (msg[4] & 0x80) >> 7
+        self.data[track_id + "_track_rolling_count"] = (msg[4] & 0x40) >> 6
+        self.data[track_id + "_track_width"] = (msg[4] & 0x3C) >> 2
+        self.data[track_id + "_track_range_accel"] = (msg[4] & 0x03) << 8
+        self.data[track_id + "_track_range_accel"] += msg[5] #Spans multiple bytes
+        self.data[track_id + "_track_med_range_mode"] = (msg[6] & 0xC0) >> 6
+        self.data[track_id + "_track_range_rate"] = (msg[6] & 0x3F) << 8
+        self.data[track_id + "_track_range_rate"] += msg[7]
 
     def place_holder_msg(self, msg):
         pass
