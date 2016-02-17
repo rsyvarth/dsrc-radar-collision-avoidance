@@ -171,9 +171,11 @@ class RadarDataParser(Thread):
         self.data[track_id + "_track_med_range_mode"] = ((msg[6] & 0xC0) >> 6)
         self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) #Spans multiple bytes
 
+#   message ID x540 or 1344
     def we_dont_know_msg(self, msg):
         pass
 
+#   message ID x5D0 or 1488
     def validation_msg_one(self, msg):
         #lr = Long Range
         self.data["valid_lr_serial_no"] = msg[0]
@@ -182,6 +184,7 @@ class RadarDataParser(Thread):
         self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6])
         self.data["valid_lr_power"] = msg[7]
 
+#   message ID x5D1 or 1489
     def validation_msg_two(self, msg):
         #mr = Mid Range
         self.data["valid_mr_serial_no"] = msg[0]
@@ -190,6 +193,7 @@ class RadarDataParser(Thread):
         self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6])
         self.data["valid_mr_power"] = msg[7]
 
+#   message ID x5E4 or 1508
     def additional_status_one(self, msg):
         self.data["switched_battery_ad"] = msg[0]
         self.data["ignition_ad"] = msg[1]
@@ -200,15 +204,19 @@ class RadarDataParser(Thread):
         self.data["3.3v_supply_ad"] = msg[6]
         self.data["10v_supply_ad"] = msg[7]
 
+#   message ID x5E5 or 1509
     def additional_status_two(self, msg):
         pass
 
+#   message ID x5E6 or 1510
     def additional_status_three(self, msg):
         pass
 
+#   message ID x5E7 or 1511
     def additional_status_four(self, msg):
         pass
 
+#   message ID x5E8 or 1512
     def additional_status_five(self, msg):
         pass
 
