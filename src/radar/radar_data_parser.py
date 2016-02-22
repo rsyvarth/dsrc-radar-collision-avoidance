@@ -1,5 +1,5 @@
 from threading import Thread
-import time, sys, logging, json, canlib, random
+import time, sys, logging, json, canlib, random, copy
 
 idBase = 1279
 
@@ -141,7 +141,7 @@ class RadarDataParser(Thread):
                             msgToFunc[msgId](msg)
                             if (msgId == 1512):
                                 print(self.data)
-                                self.callback(self.data)
+                                self.callback(copy.deepcopy(self.data))
             #Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
                 None
