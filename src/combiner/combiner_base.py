@@ -41,12 +41,22 @@ class Combiner(object):
         self.radar_data = data
         self._update_combined()
 
-    def data_normalize_dsrc(self, data):
-        """ Takes in raw dsrc data and normalizes the format. """
+    def data_normalize_radar(self, data):
+        """
+        Takes in raw radar data and normalizes the format.
+        Dictionary that is going to have a bunch of metadata about the
+        message, and then a list of entities that the radar data 'sees'
+
+        Create a key in the dict called entities that is a list
+        """
+        data = {}
+        data['entities'] = list()
+
+
         return data
 
-    def data_normalize_radar(self, data):
-        """ Takes in raw radar data and normalizes the format. """
+    def data_normalize_dsrc(self, data):
+        """ Takes in raw dsrc data and normalizes the format. """
         return data
 
     def _update_combined(self):
