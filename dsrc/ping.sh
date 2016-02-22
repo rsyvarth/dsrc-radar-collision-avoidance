@@ -5,4 +5,4 @@
 
 addr="169.254.$1"
 echo $addr
-ssh duser@$addr
+ping $addr
