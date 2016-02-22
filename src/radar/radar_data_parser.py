@@ -102,7 +102,7 @@ class RadarDataParser(Thread):
         }
         cl = canlib.canlib()
         channels = cl.getNumberOfChannels()
-        ch = 0; #Hard-coded, might need to change!
+        ch = 0; # Hard-coded, might need to change!
         if ch >= channels:
             print("Invalid channel number")
             sys.exit()
@@ -119,14 +119,14 @@ class RadarDataParser(Thread):
             print(ex)
         message = [0,0,0,0,0,0,191,0]
         ch1.write(1265,message,8)
-        msg_counter = 0 #Variable that keeps track of the iteration of msg 1344 we are on
+        msg_counter = 0 # Variable that keeps track of the iteration of msg 1344 we are on
         while True:
             try:
                 msgId, msg, dlc, flg, time = ch1.read()
                 print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
                 print(msg, ''.join('{:02x}'.format(x) for x in msg))
                 if msgId in msgToFunc:
-                    #This message is valid, so we need to parse it
+                    # This message is valid, so we need to parse it
                     if msgId >= 1280 and msgId <= 1343:
                         msgToFunc[msgId](msgId, msg)
                     else:
@@ -142,7 +142,7 @@ class RadarDataParser(Thread):
                             if (msgId == 1512):
                                 print(self.data)
                                 self.callback(copy.deepcopy(self.data))
-            #Note: Need to make a copy (copy.deepcopy())
+            # Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
                 None
             except (canlib.canError) as ex:
@@ -166,24 +166,24 @@ class RadarDataParser(Thread):
 
 
 
-    #message ID 500-53F or 1280-1343
     def track_msg(self, msgId, msg):
+        """ message ID 500-53F or 1280-1343 """
         track_id = str(msgId-idBase)
         self.data[track_id + "_track_oncoming"] = (msg[0] & 0x01)
         self.data[track_id + "_track_group_changed"] = ((msg[0] & 0x02) >> 1)
         self.data[track_id + "_track_lat_rate"] = ((msg[0] & 0xFC) >> 2)
         self.data[track_id + "_track_status"] = ((msg[1] & 0xE0) >> 5)
-        self.data[track_id + "_track_angle"] = (((msg[1] & 0x1F) << 5) | ((msg[2] & 0xF8) >> 3)) #Spans multiple bytes
-        self.data[track_id + "_track_range"] = (((msg[2] & 0x07) << 8) | msg[3]) #Spans multiple bytes
+        self.data[track_id + "_track_angle"] = (((msg[1] & 0x1F) << 5) | ((msg[2] & 0xF8) >> 3)) # Spans multiple bytes
+        self.data[track_id + "_track_range"] = (((msg[2] & 0x07) << 8) | msg[3]) # Spans multiple bytes
         self.data[track_id + "_track_bridge"] = ((msg[4] & 0x80) >> 7)
         self.data[track_id + "_track_rolling_count"] = ((msg[4] & 0x40) >> 6)
         self.data[track_id + "_track_width"] = ((msg[4] & 0x3C) >> 2)
-        self.data[track_id + "_track_range_accel"] = (((msg[4] & 0x03) << 8) | msg[5]) #Spans multiple bytes
+        self.data[track_id + "_track_range_accel"] = (((msg[4] & 0x03) << 8) | msg[5]) # Spans multiple bytes
         self.data[track_id + "_track_med_range_mode"] = ((msg[6] & 0xC0) >> 6)
-        self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) #Spans multiple bytes
+        self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) # Spans multiple bytes
 
-#   message ID x540 or 1344
     def we_dont_know_msg(self, msg_counter, msg):
+        """ message ID x540 or 1344 """
         group = str(msg_counter)
         self.data[group + "_weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
         self.data[group + "_can_id_group"] = (msg[0] & 0x0F)
@@ -196,26 +196,26 @@ class RadarDataParser(Thread):
             if ((msg_counter*7)+i) >= 64:
                 break
 
-#   message ID x5D0 or 1488
     def validation_msg_one(self, msg):
-        #lr = Long Range
+        """ message ID x5D0 or 1488 """
+        # lr = Long Range
         self.data["valid_lr_serial_no"] = msg[0]
-        self.data["valid_lr_range"] = (msg[1] << 8 | msg[2]) #spans multiple bytes
-        self.data["valid_lr_range_rate"] = (msg[3] << 8 | msg[4]) #spans multiple bytes
-        self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6]) #spans multiple bytes
+        self.data["valid_lr_range"] = (msg[1] << 8 | msg[2]) # spans multiple bytes
+        self.data["valid_lr_range_rate"] = (msg[3] << 8 | msg[4]) # spans multiple bytes
+        self.data["valid_lr_angle"] = (msg[5] << 8 | msg[6]) # spans multiple bytes
         self.data["valid_lr_power"] = msg[7]
 
-#   message ID x5D1 or 1489
     def validation_msg_two(self, msg):
-        #mr = Mid Range
+        """ message ID x501 or 1488 """
+        # mr = Mid Range
         self.data["valid_mr_serial_no"] = msg[0]
-        self.data["valid_mr_range"] = (msg[1] << 8 | msg[2]) #spans multiple bytes
-        self.data["valid_mr_range_rate"] = (msg[3] << 8 | msg[4]) #spans multiple bytes
-        self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6]) #spans multiple bytes
+        self.data["valid_mr_range"] = (msg[1] << 8 | msg[2]) # spans multiple bytes
+        self.data["valid_mr_range_rate"] = (msg[3] << 8 | msg[4]) # spans multiple bytes
+        self.data["valid_mr_angle"] = (msg[5] << 8 | msg[6]) # spans multiple bytes
         self.data["valid_mr_power"] = msg[7]
 
-#   message ID x5E4 or 1508
     def additional_status_one(self, msg):
+        """ message ID x5E4 or 1508 """
         self.data["switched_battery_ad"] = msg[0]
         self.data["ignition_ad"] = msg[1]
         self.data["thermistor_1_ad"] = msg[2]
@@ -225,22 +225,25 @@ class RadarDataParser(Thread):
         self.data["3.3v_supply_ad"] = msg[6]
         self.data["10v_supply_ad"] = msg[7]
 
-#   message ID x5E5 or 1509
     def additional_status_two(self, msg):
-#        Byte 0 - 1.8V supply A/D reading
-#        Byte 1 - -5V supply A/D reading
-#        Byte 2 - Wave Diff A/D reading
-#        Byte 3 bits 4-7 - DSP SW Version 3rd byte
-#        Byte 3 bit 3 - Vertical Align Updated
-#        Byte 3 bits 0-2 - System Power Mode
-#        1 - RADIATE_OFF, 2 - RADIATE_ON
-#        Byte 4 bit 7 - Found Target
-#        Byte 4 bit 6 - Recommend Unconverge
-#        Byte 4 bits 3-5 - Factory Align Status 1
-#        Byte 4 bits 0-2 - Factory Align Status 2
-#        Byte 5 - Factory Misalignment
-#        Byte 6 - Serv Align Updates Done
-#        Byte 7 - Vertical Misalignment
+        """
+        message ID x5E5 or 1509
+
+        Byte 0 - 1.8V supply A/D reading
+        Byte 1 - -5V supply A/D reading
+        Byte 2 - Wave Diff A/D reading
+        Byte 3 bits 4-7 - DSP SW Version 3rd byte
+        Byte 3 bit 3 - Vertical Align Updated
+        Byte 3 bits 0-2 - System Power Mode
+        1 - RADIATE_OFF, 2 - RADIATE_ON
+        Byte 4 bit 7 - Found Target
+        Byte 4 bit 6 - Recommend Unconverge
+        Byte 4 bits 3-5 - Factory Align Status 1
+        Byte 4 bits 0-2 - Factory Align Status 2
+        Byte 5 - Factory Misalignment
+        Byte 6 - Serv Align Updates Done
+        Byte 7 - Vertical Misalignment
+        """
         self.data["1.8v_supply_ad_reading"] = msg[0]
         self.data["-5v_supply_ad_reading"] = msg[1]
         self.data["wave_diff_ad_reading"] = msg[2]
@@ -255,9 +258,9 @@ class RadarDataParser(Thread):
         self.data["serv_align_updates_done"] = msg[6]
         self.data["vertical_misalignment"] = msg[7]
 
-#   message ID x5E6 or 1510
     def additional_status_three(self, msg):
-       #Byte x - Active Fault x
+        """ message ID x5E6 or 1510 """
+        # Byte x - Active Fault x
         self.data["active_fault_0"] = msg[0]
         self.data["active_fault_1"] = msg[1]
         self.data["active_fault_2"] = msg[2]
@@ -267,8 +270,8 @@ class RadarDataParser(Thread):
         self.data["active_fault_6"] = msg[6]
         self.data["active_fault_7"] = msg[7]
 
-#   message ID x5E7 or 1511
     def additional_status_four(self, msg):
+        """ message ID x5E7 or 1511 """
         self.data["history_fault_0"] = msg[0]
         self.data["history_fault_1"] = msg[1]
         self.data["history_fault_2"] = msg[2]
@@ -278,43 +281,44 @@ class RadarDataParser(Thread):
         self.data["history_fault_6"] = msg[6]
         self.data["history_fault_7"] = msg[7]
 
-#   message ID x5E8 or 1512
     def additional_status_five(self, msg):
-        self.data["average_power_cw_blockage_algo"] = (msg[0] << 8 | ((msg[1] & 0xF0) >> 4)) #spans multiple bytes
-        self.data["sideslip_angle"] = (((msg[1] & 0x03) << 8) | msg[2]) #spans multiple bytes
+        """ message ID x5E8 or 1512 """
+        self.data["average_power_cw_blockage_algo"] = (msg[0] << 8 | ((msg[1] & 0xF0) >> 4)) # spans multiple bytes
+        self.data["sideslip_angle"] = (((msg[1] & 0x03) << 8) | msg[2]) # spans multiple bytes
         self.data["serial_no_3rd_byte"] = msg[3]
         self.data["water_spray_target_id"] = ((msg[4] & 0xFE) >> 1)
         self.data["filtered_xohp_of_acc_cipv_target"] = ((msg[4] & 0x01) | msg[5])
         self.data["path_id_acc_2"] = msg[6]
         self.data["path_id_acc_3"] = msg[7]
 
-#   message ID x4E0 or 1248
     def status_one(self, msg):
+        """ message ID x4E0 or 1248 """
         self.data["status_1_rolling_count"] = ((msg[0] & 0xC0) >> 6)
-        self.data["dsp_timestamp"] = (((msg[0] & 0x3F) << 1) | ((msg[1] & 0x80) >> 7)) #Spans multiple bytes
+        self.data["dsp_timestamp"] = (((msg[0] & 0x3F) << 1) | ((msg[1] & 0x80) >> 7)) # Spans multiple bytes
         self.data["comm_error"] = ((msg[1] & 0x40) >> 6)
         self.data["radius_curvature"] = ((msg[1] & 0x3F) << 8)
         self.data["radius_curvature"] = msg[2]
-        self.data["scan_index"] = ((msg[3] << 8) | msg[4]) #Spans multiple bytes
-        self.data["yaw_rate"] = ((msg[5] << 4) | ((msg[6] & 0xF0) >> 4)) #Spans multiple bytes
-        self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) #Spans multiple bytes
+        self.data["scan_index"] = ((msg[3] << 8) | msg[4]) # Spans multiple bytes
+        self.data["yaw_rate"] = ((msg[5] << 4) | ((msg[6] & 0xF0) >> 4)) # Spans multiple bytes
+        self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) # Spans multiple bytes
 
-#   message ID x4E1 or 1249
     def status_two(self, msg):
-#        Byte 0 bits 0-1 - Rolling Count
-#        Byte 0 bits 2-7 - Maximum tracks (number of objects of interest)
-#        Byte 1 bit 7 - Overheat Error
-#        Byte 1 bit 6 - Range Perf Error
-#        Byte 1 bit 5 - Internal Error
-#        Byte 1 bit 4 - XCVR Operational
-#        0 - Not radiating, 1 - radiating
-#        Byte 1 bit 3 - Raw Data Mode
-#        Byte 1 bits 0-2, Byte 2 - Steering Angle Ack
-#        Byte 3 - Temperature
-#        Byte 4 bits 2-7 - Speed Comp Factor
-#        Byte 4 bits 0-1 - Grouping Mode
-#        Byte 5 - Yaw Rate Bias
-#        Bytes 6-7 - SW Version DSP
+        """ message ID x4E1 or 1249
+        Byte 0 bits 0-1 - Rolling Count
+        Byte 0 bits 2-7 - Maximum tracks (number of objects of interest)
+        Byte 1 bit 7 - Overheat Error
+        Byte 1 bit 6 - Range Perf Error
+        Byte 1 bit 5 - Internal Error
+        Byte 1 bit 4 - XCVR Operational
+        0 - Not radiating, 1 - radiating
+        Byte 1 bit 3 - Raw Data Mode
+        Byte 1 bits 0-2, Byte 2 - Steering Angle Ack
+        Byte 3 - Temperature
+        Byte 4 bits 2-7 - Speed Comp Factor
+        Byte 4 bits 0-1 - Grouping Mode
+        Byte 5 - Yaw Rate Bias
+        Bytes 6-7 - SW Version DSP
+        """
         self.data["status_two_rolling_count"] = (msg[0] & 0x03)
         self.data["maximum_tracks"] = ((msg[0] & 0xFE) >> 1)
         self.data["overheat_error"] = ((msg[1] & 0x80) >> 7)
@@ -322,36 +326,38 @@ class RadarDataParser(Thread):
         self.data["internal_error"] = ((msg[1] & 0x20) >> 5)
         self.data["radiating"] = ((msg[1] & 0x10) >> 4)
         self.data["raw_data_mode"] = ((msg[1] & 0x08) >> 3)
-        self.data["steering_angle_ack"] = (((msg[1] & 0x07) << 8) | msg[2]) #spans multiple bytes
+        self.data["steering_angle_ack"] = (((msg[1] & 0x07) << 8) | msg[2]) # spans multiple bytes
         self.data["temperature"] = msg[3]
         self.data["speed_comp_facter"] = ((msg[4] & 0xFC) >> 2)
         self.data["grouping_mode"] = (msg[4] & 0x03)
         self.data["yaw_rate_bias"] = msg[5]
-        self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7]) #spans multiple bytes
+        self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7]) # spans multiple bytes
 
-#   message ID x4E2 or 1250
     def status_three(self, msg):
+        """ message ID x4E2 or 1250 """
         self.data["interface_version"] = ((msg[0] & 0xF0) >> 4)
         self.data["hw_version"] = (msg[0] & 0x0F)
-        self.data["sw_version_host"] = (msg[1] << 16 | msg[2] << 8 | msg[3]) #Spans multiple bytes
-        self.data["serial_num"] = (msg[4] << 16 | msg[5] << 8 | msg[6]) #Spans multiple bytes
+        self.data["sw_version_host"] = (msg[1] << 16 | msg[2] << 8 | msg[3]) # Spans multiple bytes
+        self.data["serial_num"] = (msg[4] << 16 | msg[5] << 8 | msg[6]) # Spans multiple bytes
         self.data["sw_version_pld"] = msg[7]
 
-#   message ID x4E3 or 1251
     def status_four(self, msg):
-#        Byte 0 bit 7 - Truck Target
-#        Byte 0 bit 6 - Only Grating Lobe
-#        Byte 0 bit 5 - Sidelobe Blockage
-#        Byte 0 bit 4 - Partial Blockage
-#        Byte 0 bits 2-3 - MR/LR Mode
-#        Byte 0 bits 0-1 - Rolling Count
-#        Byte 1 - Path ID ACC
-#        Byte 2 - Path ID CMBB Move
-#        Byte 3 - Path ID CMBB Stat
-#        Byte 4 - Path ID FCW Move
-#        Byte 5 - Path ID FCW Stat
-#        Byte 6 - Auto Align Angle
-#        Byte 7 - Path ID ACC Stat
+        """ message ID x4E3 or 1251
+
+        Byte 0 bit 7 - Truck Target
+        Byte 0 bit 6 - Only Grating Lobe
+        Byte 0 bit 5 - Sidelobe Blockage
+        Byte 0 bit 4 - Partial Blockage
+        Byte 0 bits 2-3 - MR/LR Mode
+        Byte 0 bits 0-1 - Rolling Count
+        Byte 1 - Path ID ACC
+        Byte 2 - Path ID CMBB Move
+        Byte 3 - Path ID CMBB Stat
+        Byte 4 - Path ID FCW Move
+        Byte 5 - Path ID FCW Stat
+        Byte 6 - Auto Align Angle
+        Byte 7 - Path ID ACC Stat
+        """
         self.data["truck_target"] = ((msg[0] & 0x80) >> 7)
         self.data["only_grating_lobe"] = ((msg[0] & 0x40) >> 6)
         self.data["sidelobe_blockage"] = ((msg[0] & 0x20) >> 5)
