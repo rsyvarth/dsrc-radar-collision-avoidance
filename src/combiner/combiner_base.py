@@ -44,6 +44,7 @@ class Combiner(object):
                 if dispatcher_data['from'] == 'dsrc':
                     self.dsrc_data_callback(dispatcher_data['data'])
                 else:
+                    print("Test")
                     self.radar_data_callback(dispatcher_data['data'])
             except Empty:
                 print 'Timeout'
@@ -74,7 +75,26 @@ class Combiner(object):
         """
         new_data = {}
         new_data['entities'] = list()
+        track_id = 1
+        for i in range(1,65):
+            track_number = str(track_id)
+            if (data[track_number + "_track_status"] == 0):
+                track_id += 1
+                continue
+            track = {}
+            track[track_number + "_track_range"] = data[track_number + "_track_range"]
+            track[track_number + "_track_range_rate"] = data[track_number + "_track_range_rate"]
+            track[track_number + "_track_range_accel"] = data[track_number + "_track_range_accel"]
+            track[track_number + "_track_angle"] = data[track_number + "_track_angle"]
+            track[track_number + "_track_width"] = data[track_number + "_track_width"]
+            track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
+            track[track_number + "_track_lat_rate"] = data[track_number + "_track_lat_rate"]
+            track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
+            track[track_number + "_track_power"] = data[track_number + "_track_power"]
+            new_data['entities'].append(track)
+            track_id += 1;
 
+        print(new_data['entities'])
 
         return data
 
