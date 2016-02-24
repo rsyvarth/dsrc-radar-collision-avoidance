@@ -19,7 +19,7 @@ class DsrcDataParser(Process):
 
         # Setup the UDP socket that we are listening on
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(("10.1.1.2", 5005))
+        self.sock.bind(("10.0.2.15", 5005))
 
     def hex_to_int(h, d):
         i = int(h, 16)
@@ -33,6 +33,9 @@ class DsrcDataParser(Process):
         """ Start reading data from the DSRC API. """
         configure_logs()
         self.logger = logging.getLogger('dsrc')
+
+        remote_messages = []
+        print "running"
 
         while True:
 
@@ -130,20 +133,34 @@ class DsrcDataParser(Process):
 
             # If the first line contains Rx then this is a message from a remote DSRC
             # unit, if first_line contains Tx it was a message being sent to a remote DSRC
-            is_remote_message = first_line.find('Rx') > 0
+            if not message["message_id"]:
+                print "empty message"
 
+            # is_remote_message = first_line.find('Rx') > 0
+            if first_line.find('Rx') > 0:
+                print "remote message"
+                remote_messages.append(message)
 
-            data = {
-                "is_remote_message": is_remote_message,
-                #"message_bytes": message_bytes,
-                "message": message
-            }
+            # compile all of the remote messages since the last local DSRC update plus
+            # the most recent DSRC update
+            else:
+                print "not remote message"
+                data = {
+                    # "is_remote_message": is_remote_message,
+                    # "message_bytes": message_bytes,
+                    "message": message,
+                    "remote_messages": remote_messages # state of nearby vehicles
+                }
 
-            if self.log:
-                # sends JSON data to dsrc log file
-                self.logger.debug(str(
-                    json.dumps(data,
-                    separators=(',',':')))
-                )
+                # once remote_messages have been saved with most recent local DSRC update,
+                # clear the list and start anew
+                del remote_messages[:]
 
-            self.callback(data)
+                if self.log:
+                    # sends JSON data to dsrc log file
+                    self.logger.debug(str(
+                        json.dumps(data,
+                        separators=(',',':')))
+                    )
+
+                self.callback(data)
