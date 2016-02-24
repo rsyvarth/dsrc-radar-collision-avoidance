@@ -23,7 +23,7 @@ class RadarEventDispatcher(object):
         """Start running the parser's thread (After this data starts flowing)"""
         self.provider.start()
 
-    def on_message(self, thread, data):
+    def on_message(self, data):
         """Pass messages from the parser to the callback function"""
         # Maybe we will want to do some data parsing here at some point?
         self.queue.put({'from': 'radar', 'data': data})

@@ -63,6 +63,6 @@ class LogParser(Process):
 
         # iterate throuhg a list of dictionaries
         for i, d in enumerate(self.logs):
-            self.callback(self, d['data'])
+            self.callback(d['data'])
             if i < len(self.logs) - 1:
                 time.sleep((self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds())
