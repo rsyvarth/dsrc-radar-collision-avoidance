@@ -144,7 +144,8 @@ class RadarDataParser(Process):
                             msgToFunc[msgId](msg)
                             if (msgId == 1512):
                                 print(self.data)
-                                self.callback(copy.deepcopy(self.data))
+                                self.callback(self.data)
+                                self.data = {} # Start with a fresh object 
             # Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
                 None
