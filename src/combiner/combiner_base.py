@@ -44,7 +44,7 @@ class Combiner(object):
                 if dispatcher_data['from'] == 'dsrc':
                     self.dsrc_data_callback(dispatcher_data['data'])
                 else:
-                    self.dsrc_data_callback(dispatcher_data['data'])
+                    self.radar_data_callback(dispatcher_data['data'])
             except Empty:
                 print 'Timeout'
                 # pass
@@ -72,8 +72,8 @@ class Combiner(object):
 
         Create a key in the dict called entities that is a list
         """
-        data = {}
-        data['entities'] = list()
+        new_data = {}
+        new_data['entities'] = list()
 
 
         return data
