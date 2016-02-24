@@ -134,10 +134,12 @@ class Combiner(object):
 
         # Perform a simple union of data currently
         data = []
+        '''
         if self.dsrc_data:
             data = data + self.dsrc_data
         if self.radar_data:
             data = data + self.radar_data
+        '''
 
         # sends logs to the combined file
         self.logger.debug(str(
