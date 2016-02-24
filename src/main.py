@@ -73,6 +73,7 @@ from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
 from util.logger_conf import configure_logs
 
+
 def main():
     """ Main application entry point. """
     args = parse_args()
@@ -89,10 +90,6 @@ def main():
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
     combiner = Combiner(collision_avoid.new_data_handler, args.log_dsrc, args.log_radar, args.dsrc_log_file, args.radar_log_file)
     combiner.start()
-
-    # Keep the program running until ^C, sleep so we don't use too much CPU
-    while True:
-        time.sleep(100)
 
 def parse_args():
     """ Evaluate commandline arguments passed to script. """

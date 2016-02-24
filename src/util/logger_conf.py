@@ -146,4 +146,3 @@ def configure_logs():
             h_radar.setFormatter(formatter_simple)
         if h_combined is not None:
             h_combined.setFormatter(formatter_simple)
-

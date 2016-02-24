@@ -1,9 +1,10 @@
-from threading import Thread
+from multiprocessing import Process
 import time, sys, logging, json, canlib, random, copy
+from util.logger_conf import configure_logs
 
 idBase = 1279
 
-class RadarDataParser(Thread):
+class RadarDataParser(Process):
     """ Listens for new Radar messages over CAN and parses for the dispatcher.
 
     This parser reads messages from the CAN Bus using the Kvaser USB Python SKD
@@ -12,14 +13,16 @@ class RadarDataParser(Thread):
     """
     def __init__(self, callback=None, log=True):
         """ Initialize the data parser, connect to the can bus. """
-        Thread.__init__(self)
+        Process.__init__(self)
         self.callback = callback
         self.log = log
-        self.logger = logging.getLogger('radar')
         self.data = {}
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
+        configure_logs()
+        self.logger = logging.getLogger('radar')
+
         # NOTE currently this just generates random numbers and sends them to the
         # dispatcher at random intervals
         msgToFunc = {
@@ -371,4 +374,3 @@ class RadarDataParser(Thread):
         self.data["path_id_fcw_stat"] = msg[5]
         self.data["auto_align_angle"] = msg[6]
         self.data["path_id_acc_stat"] = msg[7]
-

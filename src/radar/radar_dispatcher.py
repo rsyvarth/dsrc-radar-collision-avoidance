@@ -11,9 +11,9 @@ class RadarEventDispatcher(object):
     I/O on the application's performance. The dispatcher also passes data back
     to the callback function (Combiner) when new data is available.
     """
-    def __init__(self, callback, log=True, log_file=None):
+    def __init__(self, queue, log=True, log_file=None):
         """Initialize dispatcher, instantiate the proper parser for the current environment"""
-        self.callback = callback
+        self.queue = queue
         if not log_file:
             self.provider = RadarDataParser(log=log, callback=self.on_message)
         else:
@@ -21,10 +21,15 @@ class RadarEventDispatcher(object):
 
     def start(self):
         """Start running the parser's thread (After this data starts flowing)"""
-        self.provider.daemon = True # Kills the thread on ^C
         self.provider.start()
 
     def on_message(self, thread, data):
         """Pass messages from the parser to the callback function"""
         # Maybe we will want to do some data parsing here at some point?
-        self.callback(data)
+        self.queue.put({'from': 'radar', 'data': data})
+
+    def is_alive(self):
+        return self.provider.is_alive()
+
+    def terminate(self):
+        return self.provider.terminate()

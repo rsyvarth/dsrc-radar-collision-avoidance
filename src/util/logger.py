@@ -1,16 +1,23 @@
-from threading import Thread
+from multiprocessing import Process
 import time, json, logging
 import datetime as dt
+import signal, os
 
-class LogParser(Thread):
+
+class LogParser(Process):
     """ Base log parsing class to hold common parsing functions. """
 
     def __init__(self, callback=None, log_file=None):
         """ Setup the log parser. """
-        Thread.__init__(self)
+        Process.__init__(self)
         self.callback = callback
         self.logs = self.generate_logs(log_file)
-        self.logger = logging.getLogger('debug')
+        # self.logger = logging.getLogger('debug')
+        signal.signal(signal.SIGINT, self.signal_handler)
+
+    def signal_handler(self, signal, frame):
+        print 'You pressed Ctrl+C!'
+        # self.terminate()
 
     def validate_log_line(self, line):
         """
@@ -53,9 +60,9 @@ class LogParser(Thread):
 
     def run(self):
         """ Emit the log data in real-time. """
+
         # iterate throuhg a list of dictionaries
         for i, d in enumerate(self.logs):
             self.callback(self, d['data'])
             if i < len(self.logs) - 1:
                 time.sleep((self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds())
-

@@ -1,9 +1,10 @@
-from threading import Thread
+from multiprocessing import Process
 import time, logging, json
 import socket
 from xml.etree import ElementTree
+from util.logger_conf import configure_logs
 
-class DsrcDataParser(Thread):
+class DsrcDataParser(Process):
     """ Poll DSRC API for new data, when new data is found pass along.
 
     This parser handles making calls to the DSRC to get updated information about
@@ -12,10 +13,9 @@ class DsrcDataParser(Thread):
     """
     def __init__(self, callback=None, log=True):
         """ Initialize the data parser. """
-        Thread.__init__(self)
+        Process.__init__(self)
         self.callback = callback
         self.log = log
-        self.logger = logging.getLogger('dsrc')
 
         # Setup the UDP socket that we are listening on
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -31,6 +31,8 @@ class DsrcDataParser(Thread):
 
     def run(self):
         """ Start reading data from the DSRC API. """
+        configure_logs()
+        self.logger = logging.getLogger('dsrc')
 
         while True:
 
