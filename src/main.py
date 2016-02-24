@@ -94,8 +94,8 @@ def main():
 def parse_args():
     """ Evaluate commandline arguments passed to script. """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable radar logging (only affects live data)")
-    parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging of (only affect live data)")
+    parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable dsrc logging (only affects live data)")
+    parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging (only affect live data)")
     parser.add_argument('--test-logger', dest='test_logger', action='store_true', help="Test the logging created by Bryce")
 
     parser.add_argument('--load-dsrc-log', dest='dsrc_log_file', help="Path to the dsrc log file to use for emulation (If not passed we use live data)")
