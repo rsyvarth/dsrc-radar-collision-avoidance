@@ -5,21 +5,13 @@ _dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _dest="$(readlink -m $_dir/..)"
 
 # Script to install openCV with Python 2.7+
+echo "*** Updating and installing package dependencies ***"
 echo "*** updating your packages! ***"
 sudo apt-get -y update
 sudo apt-get -y upgrade
-
-echo "*** installing developer tools ***"
-sudo apt-get -y install build-essential cmake git pkg-config
-
-echo "*** installing image libraries ***"
-sudo apt-get -y install libjpeg8-dev libtiff4-dev libjasper-dev libpng12-dev
-
-echo "*** installing basic openCV GUI"
-sudo apt-get -y install libgtk2.0-dev
-
-echo "*** installing video processing libraries ***"
-sudo apt-get -y install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev
+sudo apt-get -y install build-essential cmake git pkg-config libjpeg8-dev libtiff5-dev libjasper-dev libpng12-dev \
+                libgtk2.0-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libatlas-base-dev gfortran
+sudo apt-get -y install python2.7-dev
 
 if [ ! $(which pip) ]; then
     echo "*** installing pip ***"
@@ -27,8 +19,6 @@ if [ ! $(which pip) ]; then
     sudo python get-pip.py
 fi
 
-echo "*** optimizing library calls ***"
-sudo apt-get install libatlas-base-dev gfortran
 
 cd $_dest
 if [ ! $(which virtualenv) ]; then
@@ -36,17 +26,10 @@ if [ ! $(which virtualenv) ]; then
     pip install virtualenv
 fi
 
-echo "*** installing python2.7 dev tools ***"
-sudo apt-get install python2.7-dev
 
 echo "*** creating an opencv virtual environment ***"
 virtualenv -p /usr/bin/python2.7 cv
-source $_dest/cv/bin/activate
-
 echo "*** installing python NumPy lib ***"
-pip install numpy
-
-deactivate
 
 if [ ! -d opencv ]; then
     echo "*** installing opencv from git ***"
@@ -73,16 +56,29 @@ fi
 
 echo "*** building opencv using cmake ***"
 cd $_dest/opencv
-if [ ! -e $_dest/opencv/build ]; then
-    mkdir $_dest/opencv/build
+if [ -d build ]; then
+    rm -rf build/
 fi
-cd $_dest/opencv/build
+mkdir build
+cd build
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
-	-D CMAKE_INSTALL_PREFIX=/usr/local \
-	-D INSTALL_C_EXAMPLES=OFF \
-	-D INSTALL_PYTHON_EXAMPLES=ON \
-	-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
-	-D BUILD_EXAMPLES=ON ..
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=$_dest/opencv_contrib/modules \
+    -D BUILD_EXAMPLES=ON ..
+
+#cd $_dest/opencv
+#if [ ! -e $_dest/opencv/build ]; then
+#    mkdir $_dest/opencv/build
+#fi
+#cd $_dest/opencv/build
+#cmake -D CMAKE_BUILD_TYPE=RELEASE \
+#	-D CMAKE_INSTALL_PREFIX=/usr/local \
+#	-D INSTALL_C_EXAMPLES=OFF \
+#	-D INSTALL_PYTHON_EXAMPLES=ON \
+#	-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+#	-D BUILD_EXAMPLES=ON
 
 echo "*** compiling opencv (assumes 4 cores) ***"
 make -j4
