@@ -24,14 +24,14 @@ class Combiner(object):
         self.data_queue = Queue()
 
         self.callback = callback
-        self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file)
+        #self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file)
         self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file)
 
         self.logger = logging.getLogger('combined')
 
     def start(self):
         """ Start running the event dispatcher threads (we are ready to recieve data). """
-        self.dsrc_event_dispatcher.start()
+        #self.dsrc_event_dispatcher.start()
         self.radar_event_dispatcher.start()
 
         while self.dsrc_event_dispatcher.is_alive() and self.radar_event_dispatcher.is_alive():
