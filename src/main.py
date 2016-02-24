@@ -88,7 +88,12 @@ def main():
     collision_avoid = CollisionAvoidance()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
-    combiner = Combiner(collision_avoid.new_data_handler, args.log_dsrc, args.log_radar, args.dsrc_log_file, args.radar_log_file)
+    combiner = Combiner(collision_avoid.new_data_handler,
+        args.log_dsrc, args.log_radar,
+        args.dsrc_log_file, args.radar_log_file,
+        args.dsrc_enabled, args.radar_enabled)
+
+    # This is a blocking call, will keep on going while parsers are going for dsrc and radar
     combiner.start()
 
 def parse_args():
@@ -97,6 +102,9 @@ def parse_args():
     parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable dsrc logging (only affects live data)")
     parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging (only affect live data)")
     parser.add_argument('--test-logger', dest='test_logger', action='store_true', help="Test the logging created by Bryce")
+
+    parser.add_argument('--no-radar', dest='radar_enabled', action='store_false', help="Disable radar data collection")
+    parser.add_argument('--no-dsrc', dest='dsrc_enabled', action='store_false', help="Disable dsrc data collection")
 
     parser.add_argument('--load-dsrc-log', dest='dsrc_log_file', help="Path to the dsrc log file to use for emulation (If not passed we use live data)")
     parser.add_argument('--load-radar-log', dest='radar_log_file', help="Path to the radar log file to use for emulation (If not passed we use live data)")

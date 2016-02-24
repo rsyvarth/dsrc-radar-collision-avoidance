@@ -16,25 +16,33 @@ class Combiner(object):
     avoidance system.
     """
 
-    def __init__(self, callback, log_dsrc=True, log_radar=True, dsrc_log_file=None, radar_log_file=None):
+    def __init__(self, callback, log_dsrc=True, log_radar=True, dsrc_log_file=None, radar_log_file=None, dsrc_enabled=True, radar_enabled=True):
         """ Setup Combiner, initialize DSRC+Radar event dispatcher. """
         self.dsrc_data = None
         self.radar_data = None
 
-        self.data_queue = Queue()
+        self.dsrc_enabled = dsrc_enabled
+        self.radar_enabled = radar_enabled
 
+        self.data_queue = Queue()
         self.callback = callback
-        #self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file)
-        self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file)
+
+        if self.dsrc_enabled:
+            self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file)
+        if self.radar_enabled:
+            self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file)
 
         self.logger = logging.getLogger('combined')
 
     def start(self):
         """ Start running the event dispatcher threads (we are ready to recieve data). """
-        #self.dsrc_event_dispatcher.start()
-        self.radar_event_dispatcher.start()
 
-        while self.dsrc_event_dispatcher.is_alive() and self.radar_event_dispatcher.is_alive():
+        if self.dsrc_enabled:
+            self.dsrc_event_dispatcher.start()
+        if self.radar_enabled:
+            self.radar_event_dispatcher.start()
+
+        while self.dispatchers_alive():
             if self.data_queue.qsize() > 1:
                 print 'WARNING: The queue depth is %s, we are behind real time!' % self.data_queue.qsize()
 
@@ -50,8 +58,22 @@ class Combiner(object):
                 print 'Timeout'
                 # pass
 
-        self.dsrc_event_dispatcher.terminate()
-        self.radar_event_dispatcher.terminate()
+        if self.dsrc_enabled:
+            self.dsrc_event_dispatcher.terminate()
+        if self.radar_enabled:
+            self.radar_event_dispatcher.terminate()
+
+    def dispatchers_alive(self):
+        if self.dsrc_enabled and not self.dsrc_event_dispatcher.is_alive():
+            return False
+
+        if self.radar_enabled and not self.radar_event_dispatcher.is_alive():
+            return False
+
+        if not self.dsrc_enabled and not self.radar_enabled:
+            return False
+
+        return True
 
     def dsrc_data_callback(self, data):
         """ Callback for when new DSRC data arrives. """
