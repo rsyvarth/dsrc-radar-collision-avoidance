@@ -116,7 +116,7 @@ class RadarDataParser(Process):
             ch1.getChannelData_EAN()))
 
             ch1.setBusOutputControl(canlib.canDRIVER_NORMAL)
-            ch1.setBusParams(canlib.canBITRATE_500K)
+            ch1.setBusParams(canlib.canBITRATE_1M)
             ch1.busOn()
         except (canlib.canError) as ex:
             print(ex)
