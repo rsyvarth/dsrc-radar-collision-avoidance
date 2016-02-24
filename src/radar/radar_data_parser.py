@@ -116,7 +116,7 @@ class RadarDataParser(Process):
             ch1.getChannelData_EAN()))
 
             ch1.setBusOutputControl(canlib.canDRIVER_NORMAL)
-            ch1.setBusParams(canlib.canBITRATE_1M)
+            ch1.setBusParams(canlib.canBITRATE_500K)
             ch1.busOn()
         except (canlib.canError) as ex:
             print(ex)
@@ -143,7 +143,7 @@ class RadarDataParser(Process):
                         else:
                             msgToFunc[msgId](msg)
                             if (msgId == 1512):
-                                print(self.data)
+                                #print(self.data)
                                 self.callback(copy.deepcopy(self.data))
                                 #self.callback(self.data)
                                 #self.data = {} # Start with a fresh object 
@@ -301,8 +301,7 @@ class RadarDataParser(Process):
         self.data["status_1_rolling_count"] = ((msg[0] & 0xC0) >> 6)
         self.data["dsp_timestamp"] = (((msg[0] & 0x3F) << 1) | ((msg[1] & 0x80) >> 7)) # Spans multiple bytes
         self.data["comm_error"] = ((msg[1] & 0x40) >> 6)
-        self.data["radius_curvature"] = ((msg[1] & 0x3F) << 8)
-        self.data["radius_curvature"] = msg[2]
+        self.data["radius_curvature"] = (((msg[1] & 0x3F) << 8) | msg[2]) # Spans multiple bytes
         self.data["scan_index"] = ((msg[3] << 8) | msg[4]) # Spans multiple bytes
         self.data["yaw_rate"] = ((msg[5] << 4) | ((msg[6] & 0xF0) >> 4)) # Spans multiple bytes
         self.data["vehicle_speed"] = (((msg[6] & 0x07) << 8) | msg[7]) # Spans multiple bytes
@@ -333,7 +332,7 @@ class RadarDataParser(Process):
         self.data["raw_data_mode"] = ((msg[1] & 0x08) >> 3)
         self.data["steering_angle_ack"] = (((msg[1] & 0x07) << 8) | msg[2]) # spans multiple bytes
         self.data["temperature"] = msg[3]
-        self.data["speed_comp_facter"] = ((msg[4] & 0xFC) >> 2)
+        self.data["speed_comp_factor"] = ((msg[4] & 0xFC) >> 2)
         self.data["grouping_mode"] = (msg[4] & 0x03)
         self.data["yaw_rate_bias"] = msg[5]
         self.data["sw_version_dsp"] = ((msg[6] << 8) | msg[7]) # spans multiple bytes

@@ -52,7 +52,6 @@ class Combiner(object):
                 if dispatcher_data['from'] == 'dsrc':
                     self.dsrc_data_callback(dispatcher_data['data'])
                 else:
-                    print("Test")
                     self.radar_data_callback(dispatcher_data['data'])
             except Empty:
                 print 'Timeout'
@@ -96,6 +95,30 @@ class Combiner(object):
         Create a key in the dict called entities that is a list
         """
         new_data = {}
+
+        # First we handle the status messages
+        try:
+            # Message 4E0
+            new_data['scan_index'] = data['scan_index']
+            new_data['vehicle_speed'] = data['vehicle_speed']
+            new_data['yaw_rate'] = data['yaw_rate']
+            new_data['radius_curvature'] = data['radius_curvature']
+            # Message 4E1
+            new_data['steering_angle_ack'] = data['steering_angle_ack']
+            new_data['radiating'] = data['radiating']
+            new_data['maximum_tracks'] = data['maximum_tracks'] # Might not be necessary
+            new_data['grouping_mode'] = data['grouping_mode']
+            new_data['yaw_rate_bias'] = data['yaw_rate_bias']
+            new_data['speed_comp_factor'] = data['speed_comp_factor']
+            # Message 4E3
+            new_data['auto_align_angle'] = data['auto_align_angle']
+            # Message 5E8
+            new_data['sideslip_angle'] = data['sideslip_angle']
+        except KeyError:
+            print("KeyError, printing data structure:\n")
+            print(data)
+
+        # Now we deal with all of the tracks
         new_data['entities'] = list()
         track_id = 1
         for i in range(1,65):
@@ -123,7 +146,7 @@ class Combiner(object):
 
         print(new_data['entities'])
 
-        return data
+        return new_data
 
     def data_normalize_dsrc(self, data):
         """ Takes in raw dsrc data and normalizes the format. """
@@ -134,12 +157,10 @@ class Combiner(object):
 
         # Perform a simple union of data currently
         data = []
-        '''
         if self.dsrc_data:
             data = data + self.dsrc_data
         if self.radar_data:
             data = data + self.radar_data
-        '''
 
         # sends logs to the combined file
         self.logger.debug(str(
