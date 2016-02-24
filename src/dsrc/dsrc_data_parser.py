@@ -146,4 +146,4 @@ class DsrcDataParser(Process):
                     separators=(',',':')))
                 )
 
-            self.callback(self, [data])
+            self.callback(data)
