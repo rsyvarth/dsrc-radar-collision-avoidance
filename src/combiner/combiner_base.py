@@ -95,7 +95,6 @@ class Combiner(object):
         Create a key in the dict called entities that is a list
         """
         new_data = {}
-        # print(data)
 
         # First we handle the status messages
         try:
@@ -126,7 +125,8 @@ class Combiner(object):
             track_number = str(track_id)
             try:
                 # Future: Maybe add probability tracking for objects
-                if (data[track_number + "_track_status"] == 0):
+                track_status = data[track_number + "_track_status"]
+                if (track_status < 2 or track_status > 3):
                     track_id += 1
                     continue
                 track = {}

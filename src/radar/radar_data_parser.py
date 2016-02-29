@@ -154,7 +154,6 @@ class RadarDataParser(Process):
                                     self.logger.debug(json.dumps(self.data))
 
                                 self.data = {} # Start with a fresh object
-            # Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
                 pass
             except (canlib.canError) as ex:
