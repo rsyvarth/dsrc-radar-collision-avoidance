@@ -49,6 +49,7 @@ LOGGING = {
         'dsrc_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './logs/dsrc.log',
+            'mode': 'w',
             'formatter': 'simple',
             'level': 'DEBUG',                   # write all logs to mysite.log
             'backupCount': 5,
@@ -57,6 +58,7 @@ LOGGING = {
         'radar_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './logs/radar.log',
+            'mode': 'w',
             'formatter': 'simple',
             'level': 'DEBUG',                   # write all logs to mysite.log
             'backupCount': 5,
@@ -65,6 +67,7 @@ LOGGING = {
         'combined_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './logs/combined.log',
+            'mode': 'w',
             'formatter': 'simple',
             'level': 'DEBUG',                   # write all logs to mysite.log
             'backupCount': 5,
@@ -73,42 +76,51 @@ LOGGING = {
         'debug_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': './logs/debug.log',
+            'mode': 'w',
             'formatter': 'debug',
             'level': 'DEBUG',                   # write all logs to mysite.log
             'backupCount': 5,
             'maxBytes': 10485760,               # 10MB max
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug',
+            'level': 'WARNING',
+            'stream': 'ext://sys.stdout',
+        },
     },
     'loggers': {
         'dsrc': {
-            'handlers': ['dsrc_file'],
-            'filemode': 'w',
+            'handlers': ['dsrc_file', 'console'],
             'level':'DEBUG',                    # change this level to change which levels are written to file
+            'mode': 'w',
+            'propagate': False,
         },
         'radar': {
-            'handlers': ['radar_file'],
-            'filemode': 'w',
+            'handlers': ['radar_file', 'console'],
             'level': 'DEBUG',                   # change this level to change which levels are written to file
+            'mode': 'w',
+            'propagate': False,
         },
         'combined': {
-            'handlers': ['combined_file'],
-            'filemode': 'w',
+            'handlers': ['combined_file', 'console'],
             'level': 'DEBUG',                   # change this level to change which levels are written to file
+            'mode': 'w',
+            'propagate': False,
         },
         'debug': {
-            'handlers': ['debug_file'],
-            'filemode': 'w',
+            'handlers': ['debug_file', 'console'],
             'level': 'DEBUG',                   # change this level to change which levels are written to file
+            'mode': 'w',
+            'propagate': False,
         },
         'root': {                               # logger that is used when no args are passed into GetLogger()
-            'handlers': ['debug_file'],
-            'filemode': 'w',
+            'handlers': ['debug_file', 'console'],
             'level': 'DEBUG',                   # change this level to change which levels are written to file
+            'propagate': False,
         },
-
     }
 }
-
 def configure_logs():
     """ Configures the system logs wrt to our combined DSRC/radar system """
     logging.config.dictConfig(LOGGING)
@@ -138,11 +150,11 @@ def configure_logs():
                                                               logger_dsrc.handlers,
                                                               logger_radar.handlers,
                                                               logger_combined.handlers):
-        if h_dbg is not None:
-            h_dbg.setFormatter(formatter_debug)
         if h_dsrc is not None:
             h_dsrc.setFormatter(formatter_simple)
         if h_radar is not None:
             h_radar.setFormatter(formatter_simple)
         if h_combined is not None:
             h_combined.setFormatter(formatter_simple)
+        if h_dbg is not None:
+            h_dbg.setFormatter(formatter_debug)
