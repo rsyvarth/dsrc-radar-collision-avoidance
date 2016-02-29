@@ -82,27 +82,27 @@ LOGGING = {
     'loggers': {
         'dsrc': {
             'handlers': ['dsrc_file'],
-            'filemode': 'a',
+            'filemode': 'w',
             'level':'DEBUG',                    # change this level to change which levels are written to file
         },
         'radar': {
             'handlers': ['radar_file'],
-            'filemode': 'a',
+            'filemode': 'w',
             'level': 'DEBUG',                   # change this level to change which levels are written to file
         },
         'combined': {
             'handlers': ['combined_file'],
-            'filemode': 'a',
+            'filemode': 'w',
             'level': 'DEBUG',                   # change this level to change which levels are written to file
         },
         'debug': {
             'handlers': ['debug_file'],
-            'filemode': 'a',
+            'filemode': 'w',
             'level': 'DEBUG',                   # change this level to change which levels are written to file
         },
         'root': {                               # logger that is used when no args are passed into GetLogger()
             'handlers': ['debug_file'],
-            'filemode': 'a',
+            'filemode': 'w',
             'level': 'DEBUG',                   # change this level to change which levels are written to file
         },
 
