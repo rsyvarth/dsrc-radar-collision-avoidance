@@ -151,7 +151,7 @@ class RadarDataParser(Process):
                                 self.callback(self.data)
                                 if self.log:
                                     # sends JSON data to radar log file
-                                    self.logger.debug(json.dumps(data))
+                                    self.logger.debug(json.dumps(self.data))
 
                                 self.data = {} # Start with a fresh object
             # Note: Need to make a copy (copy.deepcopy())

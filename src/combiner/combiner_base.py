@@ -95,6 +95,7 @@ class Combiner(object):
         Create a key in the dict called entities that is a list
         """
         new_data = {}
+        print(data)
 
         # First we handle the status messages
         try:
