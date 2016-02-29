@@ -125,6 +125,7 @@ class Combiner(object):
         for i in range(1,65):
             track_number = str(track_id)
             try:
+                # Future: Maybe add probability tracking for objects
                 if (data[track_number + "_track_status"] == 0):
                     track_id += 1
                     continue
