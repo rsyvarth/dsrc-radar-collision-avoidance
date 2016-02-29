@@ -95,7 +95,7 @@ class Combiner(object):
         Create a key in the dict called entities that is a list
         """
         new_data = {}
-        print(data)
+        # print(data)
 
         # First we handle the status messages
         try:
@@ -147,7 +147,7 @@ class Combiner(object):
 
         print(new_data['entities'])
 
-        return new_data
+        return [new_data]
 
     def data_normalize_dsrc(self, data):
         """ Takes in raw dsrc data and normalizes the format. """
