@@ -17,25 +17,25 @@ class DsrcDataParser(Process):
         self.callback = callback
         self.log = log
 
-        # Setup the UDP socket that we are listening on
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(("10.0.2.15", 5005))
-
-    def hex_to_int(h, d):
+    def hex_to_int(self, h, d):
         i = int(h, 16)
         if i >= 2**(d-1):
             i -= 2**d
         return i
-    def hex_to_uint(h):
+
+    def hex_to_uint(self, h):
         return int(h, 16)
 
     def run(self):
         """ Start reading data from the DSRC API. """
+        # Setup the UDP socket that we are listening on
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(("0.0.0.0", 5005))
+
         configure_logs()
         self.logger = logging.getLogger('dsrc')
 
         remote_messages = []
-        print "running"
 
         while True:
 
@@ -48,52 +48,28 @@ class DsrcDataParser(Process):
             message_bytes = root[1].text.split() # Split the bytes on whitespace
 
             raw_message = {
-                "message_id": hex_to_uint(message_bytes[0]), # 1 byte message id
-                "tmp_id": hex_to_uint(''.join(message_bytes[1:5])), # 4 byte tmp id
-                "current_second": hex_to_uint(''.join(message_bytes[5:7])), # 2 byte current seconds
+                "message_id": self.hex_to_uint(message_bytes[0]), # 1 byte message id
+                "tmp_id": self.hex_to_uint(''.join(message_bytes[1:5])), # 4 byte tmp id
+                "current_second": self.hex_to_uint(''.join(message_bytes[5:7])), # 2 byte current seconds
 
-                "lat": hex_to_int(''.join(message_bytes[7:11]), 32), # 4 byte lat
-                "long": hex_to_int(''.join(message_bytes[11:15]), 32), # 4 byte long
-                "elevation": hex_to_int(''.join(message_bytes[15:17]), 16), # 2 byte elevation
-                "accuracy": hex_to_uint(''.join(message_bytes[17:21])), # 4 byte accuracy
+                "lat": self.hex_to_int(''.join(message_bytes[7:11]), 32), # 4 byte lat
+                "long": self.hex_to_int(''.join(message_bytes[11:15]), 32), # 4 byte long
+                "elevation": self.hex_to_int(''.join(message_bytes[15:17]), 16), # 2 byte elevation
+                "accuracy": self.hex_to_uint(''.join(message_bytes[17:21])), # 4 byte accuracy
 
-                "speed": hex_to_uint(''.join(message_bytes[21:23])), # 2 byte speed
-                "heading": hex_to_uint(''.join(message_bytes[23:25])), # 2 byte heading
-                "wheel_angle": hex_to_int(''.join(message_bytes[25:26]), 8), # 1 byte wheel angle
+                "speed": self.hex_to_uint(''.join(message_bytes[21:23])), # 2 byte speed
+                "heading": self.hex_to_uint(''.join(message_bytes[23:25])), # 2 byte heading
+                "wheel_angle": self.hex_to_int(''.join(message_bytes[25:26]), 8), # 1 byte wheel angle
 
-                "accel_long": hex_to_int(''.join(message_bytes[26:28]), 16), # 2 byte accel long
-                "accel_lat_set": hex_to_int(''.join(message_bytes[28:30]), 16), # 2 byte lateral accel
-                "accel_vert": hex_to_int(''.join(message_bytes[30:31]), 8), # 1 byte accel vert
-                "accel_yaw": hex_to_int(''.join(message_bytes[31:33]), 16), # 2 byte accel yaw
+                "accel_long": self.hex_to_int(''.join(message_bytes[26:28]), 16), # 2 byte accel long
+                "accel_lat_set": self.hex_to_int(''.join(message_bytes[28:30]), 16), # 2 byte lateral accel
+                "accel_vert": self.hex_to_int(''.join(message_bytes[30:31]), 8), # 1 byte accel vert
+                "accel_yaw": self.hex_to_int(''.join(message_bytes[31:33]), 16), # 2 byte accel yaw
 
-                "brakes": hex_to_uint(''.join(message_bytes[33:35])), # 2 byte brake status
+                "brakes": self.hex_to_uint(''.join(message_bytes[33:35])), # 2 byte brake status
 
-                "vehicle_size": hex_to_uint(''.join(message_bytes[35:38])) # 3 byte vehicle size
+                "vehicle_size": self.hex_to_uint(''.join(message_bytes[35:38])) # 3 byte vehicle size
             }
-
-            # raw_message = {
-            #     "message_id": int(message_bytes[0], 16), # 1 byte message id
-            #     "tmp_id": int(''.join(message_bytes[1:5]), 16), # 4 byte tmp id
-            #     "current_second": int(''.join(message_bytes[5:7]), 16), # 2 byte current seconds
-            #
-            #     "lat": int(''.join(message_bytes[7:11]), 16), # 4 byte lat
-            #     "long": int(''.join(message_bytes[11:15]), 16), # 4 byte long
-            #     "elevation": int(''.join(message_bytes[15:17]), 16), # 2 byte elevation
-            #     "accuracy": int(''.join(message_bytes[17:21]), 16), # 4 byte accuracy
-            #
-            #     "speed": int(''.join(message_bytes[21:23]), 16), # 2 byte speed
-            #     "heading": int(''.join(message_bytes[23:25]), 16), # 2 byte heading
-            #     "wheel_angle": int(''.join(message_bytes[25:26]), 16), # 1 byte wheel angle
-            #
-            #     "accel_long": int(''.join(message_bytes[26:28]), 16), # 2 byte accel long
-            #     "accel_lat_set": int(''.join(message_bytes[28:30]), 16), # 2 byte lateral accel
-            #     "accel_vert": int(''.join(message_bytes[30:31]), 16), # 1 byte accel vert
-            #     "accel_yaw": int(''.join(message_bytes[31:33]), 16), # 2 byte accel yaw
-            #
-            #     "brakes": int(''.join(message_bytes[33:35]), 16), # 2 byte brake status
-            #
-            #     "vehicle_size": int(''.join(message_bytes[35:38]), 16) # 3 byte vehicle size
-            # }
 
             message = {
                 "message_id": raw_message["message_id"], # to number
@@ -133,34 +109,23 @@ class DsrcDataParser(Process):
 
             # If the first line contains Rx then this is a message from a remote DSRC
             # unit, if first_line contains Tx it was a message being sent to a remote DSRC
-            if not message["message_id"]:
-                print "empty message"
-
-            # is_remote_message = first_line.find('Rx') > 0
             if first_line.find('Rx') > 0:
-                print "remote message"
                 remote_messages.append(message)
-
-            # compile all of the remote messages since the last local DSRC update plus
-            # the most recent DSRC update
             else:
-                print "not remote message"
+                # compile all of the remote messages since the last local DSRC update plus
+                # the most recent DSRC update
                 data = {
-                    # "is_remote_message": is_remote_message,
-                    # "message_bytes": message_bytes,
                     "message": message,
                     "remote_messages": remote_messages # state of nearby vehicles
                 }
 
-                # once remote_messages have been saved with most recent local DSRC update,
-                # clear the list and start anew
-                del remote_messages[:]
+                # Send the messages to the dispatcher
+                self.callback(data)
 
                 if self.log:
                     # sends JSON data to dsrc log file
-                    self.logger.debug(str(
-                        json.dumps(data,
-                        separators=(',',':')))
-                    )
+                    self.logger.debug(json.dumps(data))
 
-                self.callback(data)
+                # once remote_messages have been saved with most recent local DSRC update,
+                # clear the list and start anew
+                remote_messages = []

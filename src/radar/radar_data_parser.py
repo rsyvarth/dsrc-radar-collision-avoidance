@@ -23,8 +23,6 @@ class RadarDataParser(Process):
         configure_logs()
         self.logger = logging.getLogger('radar')
 
-        # NOTE currently this just generates random numbers and sends them to the
-        # dispatcher at random intervals
         msgToFunc = {
             1248: self.status_one,
             1249: self.status_two,
@@ -120,14 +118,18 @@ class RadarDataParser(Process):
             ch1.busOn()
         except (canlib.canError) as ex:
             print(ex)
+
+        # Initialize the Radar
         message = [0,0,0,0,0,0,191,0]
         ch1.write(1265,message,8)
+
         msg_counter = 0 # Variable that keeps track of the iteration of msg 1344 we are on
         while True:
             try:
                 msgId, msg, dlc, flg, time = ch1.read()
                 print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
                 print(msg, ''.join('{:02x}'.format(x) for x in msg))
+
                 if msgId in msgToFunc:
                     # This message is valid, so we need to parse it
                     if msgId >= 1280 and msgId <= 1343:
@@ -144,31 +146,19 @@ class RadarDataParser(Process):
                             msgToFunc[msgId](msg)
                             if (msgId == 1512):
                                 #print(self.data)
-                                self.callback(copy.deepcopy(self.data))
-                                #self.callback(self.data)
-                                #self.data = {} # Start with a fresh object 
+                                # NOTE(rob) we don't need a deep copy I don't think (deep copy is quite slow), we can just start fresh with a new object right?
+                                # self.callback(copy.deepcopy(self.data))
+                                self.callback(self.data)
+                                if self.log:
+                                    # sends JSON data to radar log file
+                                    self.logger.debug(json.dumps(data))
+
+                                self.data = {} # Start with a fresh object
             # Note: Need to make a copy (copy.deepcopy())
             except (canlib.canNoMsg) as ex:
-                None
+                pass
             except (canlib.canError) as ex:
                 print(ex)
-
-        # time.sleep(random.random()*2)
-        # while True:
-        # data = [random.randint(0,100)]
-        # if self.log:
-        # # goes the the Radar log file
-        # self.logger.debug(data)
-        # self.callback(self, data)
-        # time.sleep(random.random()*2)
-        #     data = [random.randint(0,100)]
-        #     if self.log:
-        #         # sends JSON data to radar log file
-        #         self.logger.debug(str(
-        #             json.dumps(data,
-        #             separators=(',',':')))
-        #         )
-
 
 
     def track_msg(self, msgId, msg):

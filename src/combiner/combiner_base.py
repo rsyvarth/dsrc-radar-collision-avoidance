@@ -54,8 +54,8 @@ class Combiner(object):
                 else:
                     self.radar_data_callback(dispatcher_data['data'])
             except Empty:
-                print 'Timeout'
-                # pass
+                pass
+                # print 'Timeout'
 
         if self.dsrc_enabled:
             self.dsrc_event_dispatcher.terminate()
@@ -162,11 +162,8 @@ class Combiner(object):
         if self.radar_data:
             data = data + self.radar_data
 
-        # sends logs to the combined file
-        self.logger.debug(str(
-                    json.dumps(data,
-                    separators=(',',':')))
-                )
-
         # Send updated information back to our callback function (Collision Avoidance)
         self.callback(data)
+
+        # sends logs to the combined file
+        self.logger.debug(json.dumps(data))

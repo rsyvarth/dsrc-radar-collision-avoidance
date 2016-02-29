@@ -12,6 +12,9 @@ class LogParser(Process):
         Process.__init__(self)
         self.callback = callback
         self.logs = self.generate_logs(log_file)
+        #Currently log parsing adds around 0.01 sec of overhead so we need to adjust our sleeps for this
+        self.log_overhead_adjustment = 0.01
+
         # self.logger = logging.getLogger('debug')
         signal.signal(signal.SIGINT, self.signal_handler)
 
@@ -65,4 +68,4 @@ class LogParser(Process):
         for i, d in enumerate(self.logs):
             self.callback(d['data'])
             if i < len(self.logs) - 1:
-                time.sleep((self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds())
+                time.sleep((self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds() - self.log_overhead_adjustment)
