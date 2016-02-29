@@ -131,6 +131,7 @@ def test_logger():
     logger.debug("hello combined!")
     logger = logging.getLogger('debug')
     logger.debug("hello debug!")
+    logger.warning("this should print to console")
 
 if __name__ == "__main__":
     main()
