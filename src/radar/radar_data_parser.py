@@ -127,18 +127,21 @@ class RadarDataParser(Process):
         while True:
             try:
                 msgId, msg, dlc, flg, time = ch1.read()
-                print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
-                print(msg, ''.join('{:02x}'.format(x) for x in msg))
-                #self.logger.debug("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
-                #self.logger.debug(msg, ''.join('{:02x}'.format(x) for x in msg))
+                #print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
+                #print(msg, ''.join('{:02x}'.format(x) for x in msg))
+                self.logger.debug("In radar_data_parser and this is a message")
+                self.logger.debug("msgId: %9d  time: %9d  flg: 0x%02x  dlc: %d " % (msgId, time, flg, dlc))
+                print_var = ''.join('{:02x}'.format(x) for x in msg)
+                self.logger.debug((msg,print_var))
+                #self.logger.debug(print_var)
 
                 if msgId in msgToFunc:
                     # This message is valid, so we need to parse it
                     if msgId >= 1280 and msgId <= 1343:
                         msgToFunc[msgId](msgId, msg)
                     else:
-                        print(msgId)
-                        #self.logger.debug("In radar_data_parser and this is msgId %d\n", msgId)
+                        #print(msgId)
+                        self.logger.debug("In radar_data_parser and this is msgId %d", msgId)
                         if (msgId == 1344):
                             msgToFunc[msgId](msg_counter, msg)
                             msg_counter += 1
