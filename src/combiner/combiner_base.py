@@ -115,14 +115,39 @@ class Combiner(object):
             # Message 5E8
             new_data['sideslip_angle'] = data['sideslip_angle']
         except KeyError:
-            #print("KeyError, printing data structure:\n")
             self.logger.debug("KeyError, printing data structure\n")
             self.logger.debug(json.dumps(data))
-            #print(data)
 
         # Now we deal with all of the tracks
         new_data['entities'] = list()
         track_id = 1
+        for i in range(1,65):
+            track_number = str(track_id)
+            try:
+                track_status = data[track_number + "_track_status"]
+            except KeyError:
+                track_id += 1
+                continue
+            # If we get here, then this track is valid, so add to the list
+            try:
+                track = {}
+                track[track_number + "_track_status"] = data[track_number + "_track_status"]
+                track[track_number + "_track_range"] = data[track_number + "_track_range"]
+                track[track_number + "_track_range_rate"] = data[track_number + "_track_range_rate"]
+                track[track_number + "_track_range_accel"] = data[track_number + "_track_range_accel"]
+                track[track_number + "_track_angle"] = data[track_number + "_track_angle"]
+                track[track_number + "_track_width"] = data[track_number + "_track_width"]
+                track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
+                track[track_number + "_track_lat_rate"] = data[track_number + "_track_lat_rate"]
+                track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
+                track[track_number + "_track_power"] = data[track_number + "_track_power"]
+                new_data['entities'].append(track)
+                track_id += 1;
+            except KeyError:
+                # Shouldn't happen
+                self.logger.debug("KeyError, printing data structure\n")
+                self.logger.debug(json.dumps(data))
+        '''
         for i in range(1,65):
             track_number = str(track_id)
             try:
@@ -147,7 +172,7 @@ class Combiner(object):
             except KeyError:
                 print("Keyerror on key: " + str(track_number))
                 track_id += 1
-
+        '''
         #print(new_data['entities'])
         self.logger.debug("FINISHED RADAR NORMALIZER, HERE IS NORMALIZED DATA\n")
         self.logger.debug(json.dumps(new_data))

@@ -92,7 +92,7 @@ class RadarDataParser(Process):
             1341: self.track_msg,
             1342: self.track_msg,
             1343: self.track_msg,
-            1344: self.we_dont_know_msg,
+            1344: self.track_status_msg,
             1488: self.validation_msg_one,
             1489: self.validation_msg_two,
             1508: self.additional_status_one,
@@ -163,6 +163,9 @@ class RadarDataParser(Process):
     def track_msg(self, msgId, msg):
         """ message ID 500-53F or 1280-1343 """
         track_id = str(msgId-idBase)
+        status = ((msg[1] & 0xE0) >> 5)
+        if (status < 2 or status > 3):
+            return
         self.data[track_id + "_track_oncoming"] = (msg[0] & 0x01)
         self.data[track_id + "_track_group_changed"] = ((msg[0] & 0x02) >> 1)
         self.data[track_id + "_track_lat_rate"] = ((msg[0] & 0xFC) >> 2)
@@ -176,19 +179,27 @@ class RadarDataParser(Process):
         self.data[track_id + "_track_med_range_mode"] = ((msg[6] & 0xC0) >> 6)
         self.data[track_id + "_track_range_rate"] = (((msg[6] & 0x3F) << 8) | msg[7]) # Spans multiple bytes
 
-    def we_dont_know_msg(self, msg_counter, msg):
+    def track_status_msg(self, msg_counter, msg):
         """ message ID x540 or 1344 """
-        group = str(msg_counter)
-        self.data[group + "_weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
-        self.data[group + "_can_id_group"] = (msg[0] & 0x0F)
+        add_group = False
         for i in range(1, 8):
             track_id = str((msg_counter*7)+i)
+            try:
+                status = self.data[track_id + "_track_status"]
+                add_group = True
+            except KeyError:
+                continue
             self.data[track_id + "_track_moving_fast"] = ((msg[i] & 0x80) >> 7)
             self.data[track_id + "_track_moving_slow"] = ((msg[i] & 0x40) >> 6)
             self.data[track_id + "_track_moving"] = ((msg[i] & 0x20) >> 5)
             self.data[track_id + "_track_power"] = (msg[i] & 0x1F)
             if ((msg_counter*7)+i) >= 64:
                 break
+        
+        if add_group:
+            group = str(msg_counter)
+            self.data[group + "_weird_rolling_count"] = ((msg[0] & 0x10) >> 4)
+            self.data[group + "_can_id_group"] = (msg[0] & 0x0F)
 
     def validation_msg_one(self, msg):
         """ message ID x5D0 or 1488 """
