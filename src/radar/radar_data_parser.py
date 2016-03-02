@@ -1,6 +1,5 @@
 from multiprocessing import Process
 import time, sys, logging, json, canlib, random, copy
-from util.logger_conf import configure_logs
 
 idBase = 1279
 
@@ -20,6 +19,7 @@ class RadarDataParser(Process):
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
+
         #configure_logs()
         self.logger = logging.getLogger('debug')
 
@@ -195,7 +195,7 @@ class RadarDataParser(Process):
             self.data[track_id + "_track_power"] = (msg[i] & 0x1F)
             if ((msg_counter*7)+i) >= 64:
                 break
-        
+
         if add_group:
             group = str(msg_counter)
             self.data[group + "_weird_rolling_count"] = ((msg[0] & 0x10) >> 4)

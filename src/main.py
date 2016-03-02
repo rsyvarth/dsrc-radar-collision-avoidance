@@ -78,7 +78,7 @@ def main():
     """ Main application entry point. """
     args = parse_args()
 
-    configure_logs()
+    configure_logs(getattr(logging, args.log_level.upper(), None))
     print_header()
 
     if args.test_logger:
@@ -99,16 +99,44 @@ def main():
 def parse_args():
     """ Evaluate commandline arguments passed to script. """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--no-log-dsrc', dest='log_dsrc', action='store_false', help="Disable dsrc logging (only affects live data)")
-    parser.add_argument('--no-log-radar', dest='log_radar', action='store_false', help="Disable radar logging (only affect live data)")
-    parser.add_argument('--test-logger', dest='test_logger', action='store_true', help="Test the logging created by Bryce")
+    parser.add_argument('--no-log-dsrc',
+                        dest='log_dsrc',
+                        default=True,
+                        action='store_false',
+                        help="Disable dsrc logging (only affects live data)")
+    parser.add_argument('--no-log-radar',
+                        dest='log_radar',
+                        default=True,
+                        action='store_false',
+                        help="Disable radar logging (only affect live data)")
+    parser.add_argument('--test-logger',
+                        dest='test_logger',
+                        action='store_true',
+                        help="Test the logging created by Bryce")
+    parser.add_argument('--no-radar',
+                        dest='radar_enabled',
+                        action='store_false',
+                        help="Disable radar data collection")
+    parser.add_argument('--no-dsrc',
+                        dest='dsrc_enabled',
+                        action='store_false',
+                        help="Disable dsrc data collection")
 
-    parser.add_argument('--no-radar', dest='radar_enabled', action='store_false', help="Disable radar data collection")
-    parser.add_argument('--no-dsrc', dest='dsrc_enabled', action='store_false', help="Disable dsrc data collection")
-
-    parser.add_argument('--load-dsrc-log', dest='dsrc_log_file', help="Path to the dsrc log file to use for emulation (If not passed we use live data)")
-    parser.add_argument('--load-radar-log', dest='radar_log_file', help="Path to the radar log file to use for emulation (If not passed we use live data)")
-    parser.set_defaults(log_radar=True, log_dsrc=True)
+    parser.add_argument('--load-dsrc-log',
+                        dest='dsrc_log_file',
+                        help="Path to the dsrc log file to use for emulation \
+                        (If not passed we use live data)")
+    parser.add_argument('--load-radar-log',
+                        dest='radar_log_file',
+                        help="Path to the radar log file to use for emulation \
+                        (If not passed we use live data)")
+    parser.add_argument('--log',
+                        dest='log_level',
+                        default="DEBUG",
+                        help="Set the level for the debug logger")
+    # parser.set_defaults(log_radar=True,
+    #                     log_level=True,
+    #                     debug_level=logging.DEBUG,
 
     return parser.parse_args()
 

@@ -2,7 +2,6 @@ from multiprocessing import Process
 import time, logging, json
 import socket
 from xml.etree import ElementTree
-from util.logger_conf import configure_logs
 
 class DsrcDataParser(Process):
     """ Poll DSRC API for new data, when new data is found pass along.
@@ -32,7 +31,6 @@ class DsrcDataParser(Process):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("0.0.0.0", 5005))
 
-        #configure_logs()
         self.logger = logging.getLogger('debug')
 
         remote_messages = []
