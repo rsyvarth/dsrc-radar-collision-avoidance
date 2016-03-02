@@ -32,7 +32,7 @@ class Combiner(object):
         if self.radar_enabled:
             self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file)
 
-        self.logger = logging.getLogger('combined')
+        self.logger = logging.getLogger('debug')
 
     def start(self):
         """ Start running the event dispatcher threads (we are ready to recieve data). """
@@ -115,8 +115,10 @@ class Combiner(object):
             # Message 5E8
             new_data['sideslip_angle'] = data['sideslip_angle']
         except KeyError:
-            print("KeyError, printing data structure:\n")
-            print(data)
+            #print("KeyError, printing data structure:\n")
+            self.logger.debug("KeyError, printing data structure\n")
+            self.logger.debug(json.dumps(data))
+            #print(data)
 
         # Now we deal with all of the tracks
         new_data['entities'] = list()
@@ -146,12 +148,16 @@ class Combiner(object):
                 print("Keyerror on key: " + str(track_number))
                 track_id += 1
 
-        print(new_data['entities'])
+        #print(new_data['entities'])
+        self.logger.debug("FINISHED RADAR NORMALIZER, HERE IS NORMALIZED DATA\n")
+        self.logger.debug(json.dumps(new_data))
 
         return [new_data]
 
     def data_normalize_dsrc(self, data):
         """ Takes in raw dsrc data and normalizes the format. """
+        self.logger.debug("FINISHED DSRC NORMALIZER, HERE IS NORMALIZED DATA\n")
+        self.logger.debug(json.dumps(data))
         return [data]
 
     def _update_combined(self):
@@ -168,4 +174,4 @@ class Combiner(object):
         self.callback(data)
 
         # sends logs to the combined file
-        self.logger.debug(json.dumps(data))
+        logging.getLogger('combined').info(json.dumps(data))

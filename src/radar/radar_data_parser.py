@@ -21,7 +21,7 @@ class RadarDataParser(Process):
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
         configure_logs()
-        self.logger = logging.getLogger('radar')
+        self.logger = logging.getLogger('debug')
 
         msgToFunc = {
             1248: self.status_one,
@@ -129,6 +129,8 @@ class RadarDataParser(Process):
                 msgId, msg, dlc, flg, time = ch1.read()
                 print("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
                 print(msg, ''.join('{:02x}'.format(x) for x in msg))
+                #self.logger.debug("%9d  %9d  0x%02x  %d  %s" % (msgId, time, flg, dlc, msg))
+                #self.logger.debug(msg, ''.join('{:02x}'.format(x) for x in msg))
 
                 if msgId in msgToFunc:
                     # This message is valid, so we need to parse it
@@ -136,6 +138,7 @@ class RadarDataParser(Process):
                         msgToFunc[msgId](msgId, msg)
                     else:
                         print(msgId)
+                        #self.logger.debug("In radar_data_parser and this is msgId %d\n", msgId)
                         if (msgId == 1344):
                             msgToFunc[msgId](msg_counter, msg)
                             msg_counter += 1
@@ -151,7 +154,7 @@ class RadarDataParser(Process):
                                 self.callback(self.data)
                                 if self.log:
                                     # sends JSON data to radar log file
-                                    self.logger.debug(json.dumps(self.data))
+                                    logging.getLogger('radar').info(json.dumps(self.data))
 
                                 self.data = {} # Start with a fresh object
             except (canlib.canNoMsg) as ex:

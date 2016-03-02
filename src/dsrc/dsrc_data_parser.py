@@ -33,7 +33,7 @@ class DsrcDataParser(Process):
         self.sock.bind(("0.0.0.0", 5005))
 
         configure_logs()
-        self.logger = logging.getLogger('dsrc')
+        self.logger = logging.getLogger('debug')
 
         remote_messages = []
 
@@ -118,13 +118,12 @@ class DsrcDataParser(Process):
                     "message": message,
                     "remote_messages": remote_messages # state of nearby vehicles
                 }
-
                 # Send the messages to the dispatcher
                 self.callback(data)
 
                 if self.log:
                     # sends JSON data to dsrc log file
-                    self.logger.debug(json.dumps(data))
+                    logging.getLogger('dsrc').info(json.dumps(data))
 
                 # once remote_messages have been saved with most recent local DSRC update,
                 # clear the list and start anew
