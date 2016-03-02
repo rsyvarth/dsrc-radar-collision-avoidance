@@ -20,7 +20,7 @@ class RadarDataParser(Process):
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
-        configure_logs()
+        #configure_logs()
         self.logger = logging.getLogger('debug')
 
         msgToFunc = {
