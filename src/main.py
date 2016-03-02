@@ -121,7 +121,6 @@ def parse_args():
                         dest='dsrc_enabled',
                         action='store_false',
                         help="Disable dsrc data collection")
-
     parser.add_argument('--load-dsrc-log',
                         dest='dsrc_log_file',
                         help="Path to the dsrc log file to use for emulation \

@@ -39,7 +39,6 @@ then use logger.debug(msg), logger.info(msg), etc...
 
 def configure_logs(log_level):
     """ Configures the system logs wrt to our combined DSRC/radar system """
-    print log_level
     if not isinstance(log_level, int):
         raise ValueError('Invalid log level %s' % loglevel)
 
