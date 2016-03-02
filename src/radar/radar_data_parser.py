@@ -253,7 +253,7 @@ class RadarDataParser(Process):
         self.data["found_target"] = ((msg[4] & 0x80) >> 7)
         self.data["recommend_unconverge"] = ((msg[4] & 0x40) >> 6)
         self.data["factory_align_status_1"] = ((msg[4] & 0x38) >> 3)
-        self.data["factory_align_status_2"] = (msg[4] & 0x03)
+        self.data["factory_align_status_2"] = (msg[4] & 0x07)
         self.data["factory_misalignment"] = msg[5]
         self.data["serv_align_updates_done"] = msg[6]
         self.data["vertical_misalignment"] = msg[7]
@@ -283,11 +283,11 @@ class RadarDataParser(Process):
 
     def additional_status_five(self, msg):
         """ message ID x5E8 or 1512 """
-        self.data["average_power_cw_blockage_algo"] = (msg[0] << 8 | ((msg[1] & 0xF0) >> 4)) # spans multiple bytes
+        self.data["average_power_cw_blockage_algo"] = (msg[0] << 4 | ((msg[1] & 0xF0) >> 4)) # spans multiple bytes
         self.data["sideslip_angle"] = (((msg[1] & 0x03) << 8) | msg[2]) # spans multiple bytes
         self.data["serial_no_3rd_byte"] = msg[3]
         self.data["water_spray_target_id"] = ((msg[4] & 0xFE) >> 1)
-        self.data["filtered_xohp_of_acc_cipv_target"] = ((msg[4] & 0x01) | msg[5])
+        self.data["filtered_xohp_of_acc_cipv_target"] = ((msg[4] & 0x01) << 8 | msg[5])
         self.data["path_id_acc_2"] = msg[6]
         self.data["path_id_acc_3"] = msg[7]
 
@@ -319,7 +319,7 @@ class RadarDataParser(Process):
         Bytes 6-7 - SW Version DSP
         """
         self.data["status_two_rolling_count"] = (msg[0] & 0x03)
-        self.data["maximum_tracks"] = ((msg[0] & 0xFE) >> 1)
+        self.data["maximum_tracks"] = ((msg[0] & 0xFC) >> 2)
         self.data["overheat_error"] = ((msg[1] & 0x80) >> 7)
         self.data["range_perf_error"] = ((msg[1] & 0x40) >> 6)
         self.data["internal_error"] = ((msg[1] & 0x20) >> 5)
