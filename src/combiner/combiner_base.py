@@ -1,6 +1,7 @@
 from dsrc.dsrc_dispatcher import DsrcEventDispatcher
 from radar.radar_dispatcher import RadarEventDispatcher
 import json
+import math
 import logging
 from multiprocessing import Queue
 from Queue import Empty
@@ -74,6 +75,14 @@ class Combiner(object):
 
         return True
 
+    def hex_to_int(self, h, d):
+        # h = number to convert (can be integer)
+        # d = number of bits in the number
+        i = h
+        if i >= 2**(d-1):
+            i -= 2**d
+        return i
+
     def dsrc_data_callback(self, data):
         """ Callback for when new DSRC data arrives. """
         data = self.data_normalize_dsrc(data)
@@ -121,6 +130,7 @@ class Combiner(object):
         # Now we deal with all of the tracks
         new_data['entities'] = list()
         track_id = 1
+        vehicle_speed = new_data['vehicle_speed'] # m/s
         for i in range(1,65):
             track_number = str(track_id)
             try:
@@ -141,38 +151,30 @@ class Combiner(object):
                 track[track_number + "_track_lat_rate"] = data[track_number + "_track_lat_rate"]
                 track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
                 track[track_number + "_track_power"] = data[track_number + "_track_power"]
+
+                # Attempting to get absolute values for speeds
+                # Note: Currently only basing this off range_rate and vehicle_speed
+                absolute_speed = vehicle_speed # m/s
+                angle = self.hex_to_int(track[track_number + "_track_angle"], 10) / 10
+                lat_rate = self.hex_to_int(track[track_number + "_track_lat_rate"], 6) / 4
+                range_rate = self.hex_to_int(track[track_number + "_track_range_rate"], 11) / 100
+
+                abs_speed_sin = lat_rate / math.sin(math.radians(angle))
+                abs_speed_cos = range_rate / math.cos(math.radians(angle))
+                abs_speed_hypot = math.hypot(lat_rate, range_rate)
+
+                track[track_number + "_track_absolute_rate"] = ((abs_speed_sin + abs_speed_cos + abs_speed_hypot) / 3) + absolute_speed
+                print("Angle: " + str(angle))
+                print("Lateral: " + str(lat_rate))
+                print("Rate: " + str(range_rate))
+                print("Speed: " + str(track[track_number + "_track_absolute_rate"]))
+
                 new_data['entities'].append(track)
                 track_id += 1;
             except KeyError:
                 # Shouldn't happen
                 self.logger.debug("KeyError, printing data structure\n")
                 self.logger.debug(json.dumps(data))
-        '''
-        for i in range(1,65):
-            track_number = str(track_id)
-            try:
-                # Future: Maybe add probability tracking for objects
-                track_status = data[track_number + "_track_status"]
-                if (track_status < 2 or track_status > 3):
-                    track_id += 1
-                    continue
-                track = {}
-                track[track_number + "_track_status"] = data[track_number + "_track_status"]
-                track[track_number + "_track_range"] = data[track_number + "_track_range"]
-                track[track_number + "_track_range_rate"] = data[track_number + "_track_range_rate"]
-                track[track_number + "_track_range_accel"] = data[track_number + "_track_range_accel"]
-                track[track_number + "_track_angle"] = data[track_number + "_track_angle"]
-                track[track_number + "_track_width"] = data[track_number + "_track_width"]
-                track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
-                track[track_number + "_track_lat_rate"] = data[track_number + "_track_lat_rate"]
-                track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
-                track[track_number + "_track_power"] = data[track_number + "_track_power"]
-                new_data['entities'].append(track)
-                track_id += 1;
-            except KeyError:
-                print("Keyerror on key: " + str(track_number))
-                track_id += 1
-        '''
         #print(new_data['entities'])
         self.logger.debug("FINISHED RADAR NORMALIZER, HERE IS NORMALIZED DATA\n")
         self.logger.debug(json.dumps(new_data))
