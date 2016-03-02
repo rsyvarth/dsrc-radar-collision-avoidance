@@ -1,9 +1,23 @@
+"""
+logging framework configuration
+
+Here are all the possible DEBUG levels and their numerical values NOTSET(0),
+DEBUG(10), INFO(20), WARNING(30), ERROR(40), CRITICAL(50).  To use this
+framework, follow the following syntax:
 import logging
-import itertools as it
+
+logger = logging.getLogger('dsrc')
+logger = logging.getLogger('radar')
+logger = logging.getLogger('combined')
+logger = logging.getLogger('debug')
+
+then use logger.debug(msg), logger.info(msg), etc...
+
+"""
+
+import os, sys, logging
 import logging.config
 import datetime as dt
-import os
-import glob
 
 
 class USecFormatter(logging.Formatter):
@@ -21,21 +35,6 @@ class USecFormatter(logging.Formatter):
             s = "%s.%03d" % (t, record.msecs)
         return s
 
-"""
-logging framework, useful for debugging
-Here are all the possible DEBUG levels and there numerical values
-NOTSET(0), DEBUG(10), INFO(20), WARNING(30), ERROR(40), CRITICAL(50)
-To use this framework, include the following two lines at the top of any file
-import logging
-
-logger = logging.getLogger('dsrc')
-logger = logging.getLogger('radar')
-logger = logging.getLogger('combined')
-logger = logging.getLogger('debug')
-
-then use logger.debug(msg), logger.info(msg), etc...
-
-"""
 
 def configure_logs(log_level):
     """ Configures the system logs wrt to our combined DSRC/radar system """
@@ -53,36 +52,37 @@ def configure_logs(log_level):
     h_radar = logging.handlers.RotatingFileHandler(
         'logs/radar.log',
         mode='w',
-        backupCount=5,
-        maxBytes=10485760,
+        # backupCount=5,               # If these are enabled, then logs must append
+        # maxBytes=10485760,           # If these are enabled, then logs must append
     )
     h_dsrc = logging.handlers.RotatingFileHandler(
         'logs/dsrc.log',
         mode='w',
-        backupCount=5,
-        maxBytes=10485760,
+        # backupCount=5,               # If these are enabled, then logs must append
+        # maxBytes=10485760,           # If these are enabled, then logs must append
     )
     h_combined = logging.handlers.RotatingFileHandler(
         'logs/combined.log',
         mode='w',
-        backupCount=5,
-        maxBytes=10485760,
+        # backupCount=5,               # If these are enabled, then logs must append
+        # maxBytes=10485760,           # If these are enabled, then logs must append
     )
     h_debug = logging.handlers.RotatingFileHandler(
         'logs/debug.log',
         mode='w',
-        backupCount=5,
-        maxBytes=10485760,
+        # backupCount=5,               # If these are enabled, then logs must append
+        # maxBytes=10485760,           # If these are enabled, then logs must append
     )
     h_console = logging.StreamHandler(
-        stream='ext//sys.stdout'
+        stream=sys.stdout
     )
+
     # set handler levels
     h_radar.setLevel(logging.DEBUG)
     h_dsrc.setLevel(logging.DEBUG)
     h_combined.setLevel(logging.DEBUG)
     h_debug.setLevel(logging.DEBUG)
-    h_console.setLevel(logging.WARNING)
+    h_console.setLevel(log_level)
 
     # set formatters
     h_radar.setFormatter(formatter_simple)
@@ -97,6 +97,7 @@ def configure_logs(log_level):
     logger_combined = logging.getLogger('combined')
     logger_debug = logging.getLogger('debug')
 
+    # logs don't propogate through to console
     logger_dsrc.propagate = False
     logger_radar.propagate = False
     logger_combined.propagate = False
@@ -108,13 +109,15 @@ def configure_logs(log_level):
     logger_combined.setLevel(logging.DEBUG)
     logger_debug.setLevel(log_level)
 
-    # add the handlers
+    # add the file specific handlers
     logger_dsrc.addHandler(h_dsrc)
     logger_radar.addHandler(h_radar)
     logger_combined.addHandler(h_combined)
     logger_debug.addHandler(h_debug)
 
+    # add the console handlers
     logger_dsrc.addHandler(h_console)
     logger_radar.addHandler(h_console)
     logger_combined.addHandler(h_console)
+    logger_debug.addHandler(h_console)
 
