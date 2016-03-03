@@ -80,29 +80,29 @@ class DsrcDataParser(Process):
                 "accuracy": raw_message["accuracy"], # unknown
 
                 "speed": float(raw_message["speed"]) / 75e3, # to m/s
-                "heading": float(raw_message["heading"]) / 8e1, # unknown
-                "wheel_angle": float(raw_message["wheel_angle"]) * 0.3,
+                # "heading": float(raw_message["heading"]) / 8e1, # unknown
+                # "wheel_angle": float(raw_message["wheel_angle"]) * 0.3,
 
-                "accel_long": float(raw_message["message_id"]) / 14e3, # to m/s^2
-                "accel_lat_set": float(raw_message["accel_lat_set"]) / 3e3, # to m/s^2
-                "accel_vert": float(raw_message["accel_vert"]) / 1e3, # to G's
-                "accel_yaw": float(raw_message["accel_yaw"]) / 175e2, # to degrees/s
-
-                "brakes": {
-                    "aux_brakes": raw_message["brakes"] & 0x03,
-                    "brake_boost": (raw_message["brakes"] >> 2) & 0x03,
-                    "scs": (raw_message["brakes"] >> 4) & 0x03,
-                    "abs": (raw_message["brakes"] >> 6) & 0x03,
-                    "traction": (raw_message["brakes"] >> 8) & 0x03,
-                    "spare_bit": (raw_message["brakes"] >> 10) & 0x01,
-                    "wheel_brakes_unavailable": (raw_message["brakes"] >> 11) & 0x01,
-                    "wheel_brakes": (raw_message["brakes"] >> 12) & 0x0F
-                },
-
-                "vehicle_size": {
-                    "length": raw_message["vehicle_size"] & 0x3FFF, # to cm
-                    "width": (raw_message["vehicle_size"] >> 14) & 0xFF # to cm
-                }
+                # "accel_long": float(raw_message["message_id"]) / 14e3, # to m/s^2
+                # "accel_lat_set": float(raw_message["accel_lat_set"]) / 3e3, # to m/s^2
+                # "accel_vert": float(raw_message["accel_vert"]) / 1e3, # to G's
+                # "accel_yaw": float(raw_message["accel_yaw"]) / 175e2, # to degrees/s
+                #
+                # "brakes": {
+                #     "aux_brakes": raw_message["brakes"] & 0x03,
+                #     "brake_boost": (raw_message["brakes"] >> 2) & 0x03,
+                #     "scs": (raw_message["brakes"] >> 4) & 0x03,
+                #     "abs": (raw_message["brakes"] >> 6) & 0x03,
+                #     "traction": (raw_message["brakes"] >> 8) & 0x03,
+                #     "spare_bit": (raw_message["brakes"] >> 10) & 0x01,
+                #     "wheel_brakes_unavailable": (raw_message["brakes"] >> 11) & 0x01,
+                #     "wheel_brakes": (raw_message["brakes"] >> 12) & 0x0F
+                # },
+                #
+                # "vehicle_size": {
+                #     "length": raw_message["vehicle_size"] & 0x3FFF, # to cm
+                #     "width": (raw_message["vehicle_size"] >> 14) & 0xFF # to cm
+                # }
             }
 
             # If the first line contains Rx then this is a message from a remote DSRC
