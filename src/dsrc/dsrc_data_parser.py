@@ -1,5 +1,6 @@
 from multiprocessing import Process
 import time, logging, json
+from util.logger_conf import configure_logs
 import socket
 from xml.etree import ElementTree
 
@@ -10,11 +11,12 @@ class DsrcDataParser(Process):
     the vehicle state. If the information retrieved is different from the previously
     obtained information we send the data along to the event dispatcher.
     """
-    def __init__(self, callback=None, log=True):
+    def __init__(self, callback=None, log=True, log_level="DEBUG"):
         """ Initialize the data parser. """
         Process.__init__(self)
         self.callback = callback
         self.log = log
+        self.log_level = log_level
 
     def hex_to_int(self, h, d):
         i = int(h, 16)
@@ -31,7 +33,11 @@ class DsrcDataParser(Process):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("0.0.0.0", 5005))
 
-        self.logger = logging.getLogger('debug')
+        # configure_logs(getattr(logging, self.log_level, None))
+        self.logger = logging.getLogger('debug_dsrc')
+        # These are working on Bryce's Machine
+        # self.logger.info( "welcome to the debug_dsrc logger!")
+        # logging.getLogger('dsrc').info("This is a test message for dsrc!")
 
         remote_messages = []
 

@@ -11,11 +11,11 @@ class RadarEventDispatcher(object):
     I/O on the application's performance. The dispatcher also passes data back
     to the callback function (Combiner) when new data is available.
     """
-    def __init__(self, queue, log=True, log_file=None):
+    def __init__(self, queue, log=True, log_file=None, log_level="DEBUG"):
         """Initialize dispatcher, instantiate the proper parser for the current environment"""
         self.queue = queue
         if not log_file:
-            self.provider = RadarDataParser(log=log, callback=self.on_message)
+            self.provider = RadarDataParser(log=log, callback=self.on_message, log_level=log_level)
         else:
             self.provider = RadarLogParser(log_file=log_file, callback=self.on_message)
 

@@ -91,7 +91,8 @@ def main():
     combiner = Combiner(collision_avoid.new_data_handler,
         args.log_dsrc, args.log_radar,
         args.dsrc_log_file, args.radar_log_file,
-        args.dsrc_enabled, args.radar_enabled)
+        args.dsrc_enabled, args.radar_enabled,
+        args.log_level.upper())
 
     # This is a blocking call, will keep on going while parsers are going for dsrc and radar
     combiner.start()
@@ -151,14 +152,20 @@ def print_header():
 def test_logger():
     """Test code that Bryce wrote to ensure logger was functioning"""
     logger = logging.getLogger('dsrc')
-    logger.debug("hello DSRC!")
+    logger.info("hello DSRC!")
     logger = logging.getLogger('radar')
-    logger.debug("hello radar!")
+    logger.info("hello radar!")
     logger = logging.getLogger('combined')
-    logger.debug("hello combined!")
+    logger.info("hello combined!")
     logger = logging.getLogger('debug')
     logger.debug("hello debug!")
     logger.warning("this should print to console")
+    logger = logging.getLogger('debug_dsrc')
+    logger.debug("hello debug_dsrc!")
+    logger = logging.getLogger('debug_radar')
+    logger.debug("hello debug_radar!")
+    logger = logging.getLogger('debug_combined')
+    logger.debug("hello debug_combined!")
 
 if __name__ == "__main__":
     main()

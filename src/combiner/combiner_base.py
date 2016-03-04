@@ -17,7 +17,9 @@ class Combiner(object):
     avoidance system.
     """
 
-    def __init__(self, callback, log_dsrc=True, log_radar=True, dsrc_log_file=None, radar_log_file=None, dsrc_enabled=True, radar_enabled=True):
+    def __init__(self, callback, log_dsrc=True, log_radar=True,
+                 dsrc_log_file=None, radar_log_file=None, dsrc_enabled=True,
+                 radar_enabled=True, log_level="DEBUG"):
         """ Setup Combiner, initialize DSRC+Radar event dispatcher. """
         self.dsrc_data = None
         self.radar_data = None
@@ -29,9 +31,9 @@ class Combiner(object):
         self.callback = callback
 
         if self.dsrc_enabled:
-            self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file)
+            self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file, log_level=log_level)
         if self.radar_enabled:
-            self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file)
+            self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file, log_level=log_level)
 
         self.logger = logging.getLogger('debug')
 

@@ -1,4 +1,5 @@
 from multiprocessing import Process
+from util.logger_conf import configure_logs
 import time, sys, logging, json, canlib, random, copy
 
 idBase = 1279
@@ -10,18 +11,21 @@ class RadarDataParser(Process):
     and formats Radar information into a python object. Then we send the data
     along to the event dispatcher.
     """
-    def __init__(self, callback=None, log=True):
+    def __init__(self, callback=None, log=True, log_level="DEBUG"):
         """ Initialize the data parser, connect to the can bus. """
         Process.__init__(self)
         self.callback = callback
         self.log = log
+        self.log_level = log_level
         self.data = {}
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
-
-        #configure_logs()
-        self.logger = logging.getLogger('debug')
+        # configure_logs(getattr(logging, self.log_level, None))
+        self.logger = logging.getLogger('debug_radar')
+        # These are logging properly on Bryce's machinekk:w
+        # self.logger.info( "welcome to the debug_radar logger!")
+        # logging.getLogger('radar').info("this is a dummy message")
 
         msgToFunc = {
             1248: self.status_one,
