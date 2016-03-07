@@ -70,6 +70,11 @@ docs/_build/
 linuxcan/canlib/libcanlib.so.1.1.0
 linuxcan/linlib/liblinlib.so.1.1.0
 
+# opencv directories
+videodemo/cv
+videodemo/opencv
+videodemo/opencv_contrib
+
 # PyBuilder
 target/
 
