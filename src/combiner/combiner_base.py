@@ -159,17 +159,18 @@ class Combiner(object):
                 absolute_speed = vehicle_speed # m/s
                 angle = self.hex_to_int(track[track_number + "_track_angle"], 10) / 10
                 lat_rate = self.hex_to_int(track[track_number + "_track_lat_rate"], 6) / 4
-                range_rate = self.hex_to_int(track[track_number + "_track_range_rate"], 11) / 100
+                range_rate = self.hex_to_int(track[track_number + "_track_range_rate"], 14) / 100
 
-                abs_speed_sin = lat_rate / math.sin(math.radians(angle))
-                abs_speed_cos = range_rate / math.cos(math.radians(angle))
+                radians = math.radians(angle)
+                abs_speed_sin = lat_rate / math.sin(radians) if math.sin(radians) != 0 else lat_rate
+                abs_speed_cos = range_rate / math.cos(radians) if math.cos(radians) != 0 else range_rate
                 abs_speed_hypot = math.hypot(lat_rate, range_rate)
 
                 track[track_number + "_track_absolute_rate"] = ((abs_speed_sin + abs_speed_cos + abs_speed_hypot) / 3) + absolute_speed
-                print("Angle: " + str(angle))
-                print("Lateral: " + str(lat_rate))
-                print("Rate: " + str(range_rate))
-                print("Speed: " + str(track[track_number + "_track_absolute_rate"]))
+                #print("Angle: " + str(angle))
+                #print("Lateral: " + str(lat_rate))
+                #print("Rate: " + str(range_rate))
+                #print("Speed: " + str(track[track_number + "_track_absolute_rate"]))
 
                 new_data['entities'].append(track)
                 track_id += 1;
