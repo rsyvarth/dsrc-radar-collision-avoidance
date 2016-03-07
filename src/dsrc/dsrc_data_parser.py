@@ -33,11 +33,11 @@ class DsrcDataParser(Process):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(("0.0.0.0", 5005))
 
-        # configure_logs(getattr(logging, self.log_level, None))
+        configure_logs(getattr(logging, self.log_level, None))
         self.logger = logging.getLogger('debug_dsrc')
         # These are working on Bryce's Machine
         # self.logger.info( "welcome to the debug_dsrc logger!")
-        # logging.getLogger('dsrc').info("This is a test message for dsrc!")
+        logging.getLogger('debug_dsrc').info("This is a test message for dsrc!")
 
         remote_messages = []
 

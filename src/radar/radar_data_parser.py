@@ -21,7 +21,7 @@ class RadarDataParser(Process):
 
     def run(self):
         """ Start reading data from the CAN Bus and sending full objects to the dispatcher. """
-        # configure_logs(getattr(logging, self.log_level, None))
+        configure_logs(getattr(logging, self.log_level, None))
         self.logger = logging.getLogger('debug_radar')
         # These are logging properly on Bryce's machinekk:w
         # self.logger.info( "welcome to the debug_radar logger!")
