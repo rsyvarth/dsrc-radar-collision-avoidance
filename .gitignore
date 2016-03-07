@@ -66,6 +66,10 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# canlib binaries
+linuxcan/canlib/libcanlib.so.1.1.0
+linuxcan/linlib/liblinlib.so.1.1.0
+
 # PyBuilder
 target/
 
