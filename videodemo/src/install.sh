@@ -67,9 +67,9 @@ make -j4
 sudo make install
 sudo ldconfig
 
-if [ ! -e $_dest/cv/lib/python2.7/site-packages ]; then
+if [ ! -e $_dest/cv/lib/python2.7/site-packages/cv2.so ]; then
     echo "*** moving opencv to your virtualenv ***"
-    sudo mv /usr/local/lib/python2.7/site-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
+    sudo mv /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
 fi
 
 exit 0
