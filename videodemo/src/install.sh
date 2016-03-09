@@ -70,6 +70,9 @@ sudo ldconfig
 if [ ! -e $_dest/cv/lib/python2.7/site-packages/cv2.so ]; then
     echo "*** moving opencv to your virtualenv ***"
     sudo mv /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
+else
+    echo "*** symlink from /usr/local failed! copying the binary instead ***"
+    sudo cp /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
 fi
 
 exit 0
