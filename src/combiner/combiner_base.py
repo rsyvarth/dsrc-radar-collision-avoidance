@@ -111,20 +111,20 @@ class Combiner(object):
         try:
             # Message 4E0
             new_data['scan_index'] = data['scan_index']
-            new_data['vehicle_speed'] = data['vehicle_speed']
-            new_data['yaw_rate'] = data['yaw_rate']
-            new_data['radius_curvature'] = data['radius_curvature']
+            new_data['vehicle_speed'] = data['vehicle_speed'] / 16
+            new_data['yaw_rate'] = self.hex_to_int(data['yaw_rate'], 12) / 16
+            new_data['radius_curvature'] = self.hex_to_int(data['radius_curvature'], 14)
             # Message 4E1
             new_data['steering_angle_ack'] = data['steering_angle_ack']
             new_data['radiating'] = data['radiating']
             new_data['maximum_tracks'] = data['maximum_tracks'] # Might not be necessary
             new_data['grouping_mode'] = data['grouping_mode']
-            new_data['yaw_rate_bias'] = data['yaw_rate_bias']
-            new_data['speed_comp_factor'] = data['speed_comp_factor']
+            new_data['yaw_rate_bias'] = self.hex_to_int(data['yaw_rate_bias'], 8) / 8
+            new_data['speed_comp_factor'] = (data['speed_comp_factor'] / 512) + 0.9375
             # Message 4E3
-            new_data['auto_align_angle'] = data['auto_align_angle']
+            new_data['auto_align_angle'] = self.hex_to_int(data['auto_align_angle'], 8) / 16
             # Message 5E8
-            new_data['sideslip_angle'] = data['sideslip_angle']
+            new_data['sideslip_angle'] = self.hex_to_int(data['sideslip_angle'], 10) / 8
         except KeyError:
             self.logger.debug("KeyError, printing data structure\n")
             self.logger.debug(json.dumps(data))
@@ -144,15 +144,15 @@ class Combiner(object):
             try:
                 track = {}
                 track[track_number + "_track_status"] = data[track_number + "_track_status"]
-                track[track_number + "_track_range"] = data[track_number + "_track_range"]
-                track[track_number + "_track_range_rate"] = data[track_number + "_track_range_rate"]
-                track[track_number + "_track_range_accel"] = data[track_number + "_track_range_accel"]
-                track[track_number + "_track_angle"] = data[track_number + "_track_angle"]
-                track[track_number + "_track_width"] = data[track_number + "_track_width"]
+                track[track_number + "_track_range"] = data[track_number + "_track_range"] / 10
+                track[track_number + "_track_range_rate"] = self.hex_to_int(data[track_number + "_track_range_rate"], 14) / 100
+                track[track_number + "_track_range_accel"] = self.hex_to_int(data[track_number + "_track_range_accel"], 10) / 20
+                track[track_number + "_track_angle"] = self.hex_to_int(data[track_number + "_track_angle"], 10) / 10
+                track[track_number + "_track_width"] = data[track_number + "_track_width"] / 2
                 track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
-                track[track_number + "_track_lat_rate"] = data[track_number + "_track_lat_rate"]
+                track[track_number + "_track_lat_rate"] = self.hex_to_int(data[track_number + "_track_lat_rate"], 6) / 4
                 track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
-                track[track_number + "_track_power"] = data[track_number + "_track_power"]
+                track[track_number + "_track_power"] = self.hex_to_int(data[track_number + "_track_power"], 5)
 
                 # Attempting to get absolute values for speeds
                 # Note: Currently only basing this off range_rate and vehicle_speed
