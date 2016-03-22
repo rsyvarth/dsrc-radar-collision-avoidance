@@ -49,7 +49,7 @@ fi
 echo "-----------------------------------"
 echo "Running: ping $ip"
 echo "-----------------------------------"
-ping -c 1 -W 1000 $ip > /dev/null
+ping -c 1 -W 1000 $ip
 if [[ $? != "0" ]]; then
     echo "Error: Cannot connect to host, is everything connected?"
     exit 84115
