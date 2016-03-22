@@ -85,6 +85,9 @@ echo "Running: ssh duser@$ip 'watch -n0 cansend can0 7DF#02010D0000000000 &'"
 echo " - This command polls the CAN bus 10 times/sec for vehicle's speed"
 pass_prompt
 echo "-----------------------------------"
+# Kill running cansend script if one exists
+$sshpass_prefix ssh duser@$ip "sudo pkill cansend"
+# Start up a new cansend script
 $sshpass_prefix ssh duser@$ip "watch -n0 cansend can0 7DF#02010D0000000000 &"
 echo ""
 
@@ -93,6 +96,9 @@ echo "Running: ssh duser@$ip 'sudo D_LEVEL=5 ./bsm-shell -c 174 -a 176 -n 174 -x
 echo " - This command starts sending/recieving DSRC messages and logging them to our local application"
 pass_prompt
 echo "-----------------------------------"
+# Kill running bsm script if one exists
+$sshpass_prefix ssh duser@$ip "sudo pkill bsm-shell"
+# Start up a new bsm script
 $sshpass_prefix ssh duser@$ip "sudo D_LEVEL=5 ./bsm-shell -c 174 -a 176 -n 174 -x 0x00 --LogUdp --UdpAddr $self_ip --UdpTxPort 5005 &"
 echo ""
 
