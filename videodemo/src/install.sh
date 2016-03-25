@@ -30,6 +30,7 @@ echo "*** Done Installing Dependencies ***"
 
 virtualenv cv
 pip install numpy
+pip install imutils
 
 if [ ! -d $_dest/opencv ]; then
     cd $_dest
