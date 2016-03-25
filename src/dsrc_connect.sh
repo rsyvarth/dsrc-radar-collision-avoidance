@@ -42,7 +42,7 @@ else
         fi
     done
 
-    self_ip=$(ifconfig | grep 169.115 | awk '{print $2}' | sed -e s/addr://)
+    self_ip=$(ifconfig | grep 169.254 | awk '{print $2}' | sed -e s/addr://)
     echo "Found current machine's IP to be $self_ip"
 fi
 
