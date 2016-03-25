@@ -1,3 +1,0 @@
-imutils==0.3.6
-numpy==1.10.4
-wheel==0.24.0

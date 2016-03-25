@@ -2,7 +2,7 @@
 
 # Script's directory
 _dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-_dest="$(readlink -m $_dir/..)"
+_dest="$(readlink -m $_dir)"
 
 echo "*** Installing Dependencies ***"
 sudo apt-get -y update &> /dev/null
@@ -28,7 +28,7 @@ if [ ! $(which virtualenv) ]; then
 fi
 echo "*** Done Installing Dependencies ***"
 
-virtualenv cv
+virtualenv venv
 pip install numpy
 pip install imutils
 
@@ -68,12 +68,16 @@ make -j4
 sudo make install
 sudo ldconfig
 
-if [ ! -e $_dest/cv/lib/python2.7/site-packages/cv2.so ]; then
+if [ ! -e $_dest/venv/lib/python2.7/site-packages/cv2.so ]; then
     echo "*** moving opencv to your virtualenv ***"
-    sudo mv /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
+    sudo mv /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/venv/lib/python2.7/site-packages/cv2.so
 else
     echo "*** symlink from /usr/local failed! copying the binary instead ***"
-    sudo cp /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/cv/lib/python2.7/site-packages/cv2.so
+    sudo cp /usr/local/lib/python2.7/dist-packages/cv2.so $_dest/venv/lib/python2.7/site-packages/cv2.so
 fi
+
+echo "*** moving virtual env to GIT_DIR/src ***"
+cd $_dest
+mv venv ../src
 
 exit 0
