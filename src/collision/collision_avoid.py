@@ -22,3 +22,28 @@ class CollisionAvoidance(object):
     def analyze_state(self):
         """Eventually this will do cool math to detect collisions"""
         pass
+
+    def display(self, videopath):
+        """videopath: path to video that we will be using for image processing"""
+        track_objects = self.current_state["entities"]
+        """
+        To draw on the object:
+        1. Get track info from track_objects: track_width, track_range, track_angle?
+        2. Get info for the image: total image size (pixels)
+        3. Calculate where in the image the object would be: camera vs. radar position, object sizes in terms of pixels at different positions, anything else?
+        4. Based on projected size (height), calculate top and bottom pixel values, as well as middle point
+        5. Calculate top left and bottom right corners of the track object
+        6. Draw the appropriate rectangle
+        """
+        for track in track_objects:
+            # Step 1
+            track_number = track["track_number"]
+            track_width = track[track_number+"_track_width"]
+            track_range = track[track_number+"_track_range"]
+            track_angle = track[track_number+"_track_angle"]
+
+            # Step 2
+            # Step 3
+            # Step 4
+            # Step 5
+            # Step 6

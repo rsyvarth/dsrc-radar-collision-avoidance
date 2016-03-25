@@ -143,6 +143,7 @@ class Combiner(object):
             # If we get here, then this track is valid, so add to the list
             try:
                 track = {}
+                track["track_number"] = track_number
                 track[track_number + "_track_status"] = data[track_number + "_track_status"]
                 track[track_number + "_track_range"] = data[track_number + "_track_range"] / 10
                 track[track_number + "_track_range_rate"] = self.hex_to_int(data[track_number + "_track_range_rate"], 14) / 100
