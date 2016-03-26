@@ -85,7 +85,7 @@ class DsrcDataParser(Process):
                 "elevation": float(raw_message["elevation"]) / 1e1, # to m
                 "accuracy": raw_message["accuracy"], # unknown
 
-                "speed": float(raw_message["speed"] & 0x1FFF), # to km/h
+                "speed": raw_message["speed"] & 0x1FFF, # to km/h
                 # "heading": float(raw_message["heading"]) / 8e1, # unknown
                 # "wheel_angle": float(raw_message["wheel_angle"]) * 0.3,
 
