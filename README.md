@@ -35,7 +35,9 @@ directory and run the following command.
 There is a common bug found with the installation script. If you open up a
 python shell and run the following command.
 
-    ```Python import cv2 ```
+    ``` Python
+    import cv2
+    ```
 
 And you get an error about how the cv2 module is not found, then perform the
 following actions:
@@ -52,7 +54,7 @@ following actions:
    directory.
 5. Reopen up your virtualenv again and run
 
-    ```Python
+    ``` Python
     import cv2
     ```
 6. At this point you should not receive any errors.
