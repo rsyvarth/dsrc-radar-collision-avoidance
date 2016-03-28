@@ -20,7 +20,7 @@ def main():
     cv2.imshow("Circles!", img)
 
     for px_width in range(IMG_WIDTH - 1):
-        # draw a black circle behind and a white circle in front
+        # draw a 15 px black circle behind and a white circle in front
         cv2.circle(img,(px_width, px_width), 15, (0, 0, 0), -1)
         cv2.circle(img,(px_width + 1, px_width + 1), 15, (255, 255, 255), -1)
         cv2.imshow("Circles!", img)
