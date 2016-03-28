@@ -45,14 +45,22 @@ class CollisionAvoidance(Process):
         pass
 
     def display(self, videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
-        """videopath: path to video that we will be using for image processing"""
-        track_objects = self.current_state["entities"]
+        """
+        videopath: path to video that we will be using for image processing
+        distance_behind_radar: how far the camera is behind the radar in the vehicle (m)
+        distance_beside_radar: how far the camera is to the side of the radar in the vehicle (m)
+        camera_angle: angle of the camera relative to the radar (currently not used; degrees)
+        camera_field_of_view: the angular extent of the scene imaged by your camera (degrees); how many degrees can your camera see
+        focal_length: focal length of the camera while filming (mm; note that we do not account for focal length changes mid_video)
+        sensor_size: size of the camera sensor (mm; believe we want the height)
+        """
+        track_objects = self.current_state[1]["entities"]
         """
         To draw on the object:
         1. Get track info from track_objects: track_width, track_range, track_angle?
         2. Get info for the image: total image size (pixels)
         3. Calculate where in the image the object would be: camera vs. radar position, object sizes in terms of pixels at different positions, anything else?
-        4. Based on projected size (height), calculate top and bottom pixel values, as well as middle point
+        4. Based on projected size (height), calculate the middle point
         5. Calculate top left and bottom right corners of the track object
         6. Draw the appropriate rectangle
         """
@@ -76,12 +84,30 @@ class CollisionAvoidance(Process):
 
                 # Step 3
                 # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
-                obj_width, obj_range, obj_angle = convert_radar_to_camera(track_width, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle)
-                pixel_width = (focal_length * obj_width * img_width) / (obj_range * sensor_size)
+                obj_range, obj_angle = convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, 0)
+                pixel_width = (focal_length * track_width * img_width) / (obj_range * sensor_size)
+
                 # Step 4
+                img_midpoint = (img_width / 2) + ((obj_angle / camera_field_of_view) * img_width)
+
                 # Step 5
+                # For now, drawing squares and drawing simply on the middle of the image
+                # Top left corner of image is point (0, 0)
+                img_left_side = img_midpoint - (pixel_width / 2)
+                img_right_side = img_midpoint + (pixel_width / 2)
+                img_top = (img_height / 2) - (pixel_width / 2)
+                img_bottom = (img_height / 2) + (pixel_width / 2)
+                # TODO: Add bounds checks
+                top_left = (img_left_side, img_top)
+                bottom_right = (img_right_side, img_bottom)
+
                 # Step 6
                 cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
 
-    def convert_radar_to_camera(track_width, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
-        
+    def convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
+        triangle_opposite = distance_behind_radar + (track_range * math.cos(math.radians(track_angle)))
+        triangle_adj = distance_beside_radar + (track_range * math.sin(math.radians(track_angle)))
+        obj_range = math.sqrt(math.pow(triangle_opposite, 2) + math.pow(triangle_adj, 2))
+        obj_angle = math.atan(triangle_opposite / triangle_adj)
+        obj_angle = math.degrees(obj_angle)
+        return obj_range, obj_angle
