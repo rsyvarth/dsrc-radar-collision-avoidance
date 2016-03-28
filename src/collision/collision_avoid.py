@@ -27,7 +27,7 @@ class CollisionAvoidance(object):
         """Eventually this will do cool math to detect collisions"""
         pass
 
-    def display(self, videofile, distance_from_radar):
+    def display(self, videofile, distance_from_radar, focal_length, sensor_size):
         """videopath: path to video that we will be using for image processing"""
         track_objects = self.current_state["entities"]
         """
@@ -56,7 +56,9 @@ class CollisionAvoidance(object):
 
                 # Step 2
                 img_height, img_width = img.shape[:2]
+
                 # Step 3
+                # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
                 # Step 4
                 # Step 5
                 # Step 6
