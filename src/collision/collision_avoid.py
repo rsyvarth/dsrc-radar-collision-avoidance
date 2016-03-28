@@ -1,10 +1,16 @@
 from multiprocessing import Process
 import logging
 import numpy as np
-import cv2
 import math
-from collision_constants import CollisionConstants
 from Queue import Empty
+
+ENABLE = True
+try:
+    import cv2
+except ImportError:
+    ENABLE = False
+
+from collision_constants import CollisionConstants
 
 class CollisionAvoidance(Process):
     """ Takes combined data and displays predicted collisions.
@@ -14,15 +20,19 @@ class CollisionAvoidance(Process):
     collisions displaying warnings in a simple UI.
     """
 
-    def __init__(self, queue):
+    def __init__(self, queue, video_file):
         """Setup the CA class, just empty state for now"""
         Process.__init__(self)
         self.queue = queue
+        self.video_file = video_file
         self.current_state = None
         self.constants = CollisionConstants()
 
     def run(self):
         print "Starting visualizer"
+        if not ENABLE:
+            print "No open cv found, giving up"
+            return
 
         while True:
             try:
