@@ -35,7 +35,7 @@ class Combiner(object):
         if self.radar_enabled:
             self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file, log_level=log_level)
 
-        self.logger = logging.getLogger('debug')
+        self.logger = logging.getLogger('debug_combined')
 
     def start(self):
         """ Start running the event dispatcher threads (we are ready to recieve data). """
@@ -207,3 +207,4 @@ class Combiner(object):
         # sends logs to the combined file
         logging.getLogger('combined').info(json.dumps(data))
         self.logger.info(json.dumps(data))
+
