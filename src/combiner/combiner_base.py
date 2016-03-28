@@ -185,13 +185,13 @@ class Combiner(object):
         # self.logger.debug("FINISHED RADAR NORMALIZER, HERE IS NORMALIZED DATA\n")
         # self.logger.debug(json.dumps(new_data))
 
-        return [new_data]
+        return new_data
 
     def data_normalize_dsrc(self, data):
         """ Takes in raw dsrc data and normalizes the format. """
         # self.logger.debug("FINISHED DSRC NORMALIZER, HERE IS NORMALIZED DATA\n")
         # self.logger.debug(json.dumps(data))
-        return [data]
+        return data
 
     def _update_combined(self):
         """ Updates the combined model using the latest dsrc & radar data. """

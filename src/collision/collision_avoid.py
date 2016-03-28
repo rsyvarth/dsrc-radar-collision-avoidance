@@ -34,14 +34,7 @@ class CollisionAvoidance(Process):
             print "No open cv found, giving up"
             return
 
-        while True:
-            try:
-                self.current_state = self.queue.get(timeout=0.5)
-                # print self.current_state
-                print 'got data'
-            except Empty:
-                print 'no data'
-                pass
+        self.display(self.video_file, 1, 1, 0, 160, .002, .127)
 
     def new_data_handler(self, data):
         """Called whenever new data arrives from the Combiner"""
@@ -63,9 +56,7 @@ class CollisionAvoidance(Process):
         camera_field_of_view: the angular extent of the scene imaged by your camera (degrees); how many degrees can your camera see
         focal_length: focal length of the camera while filming (mm; note that we do not account for focal length changes mid_video)
         sensor_size: size of the camera sensor (mm; believe we want the height)
-        """
-        track_objects = self.current_state[1]["entities"]
-        """
+
         To draw on the object:
         1. Get track info from track_objects: track_width, track_range, track_angle?
         2. Get info for the image: total image size (pixels)
@@ -74,7 +65,7 @@ class CollisionAvoidance(Process):
         5. Calculate top left and bottom right corners of the track object
         6. Draw the appropriate rectangle
         """
-        camera = cv2.VideoCapture(videofile)
+        camera = cv2.VideoCapture(0)
         while True:
             # Loop until the video is done
             ret, img = camera.read()
@@ -82,10 +73,22 @@ class CollisionAvoidance(Process):
                 # We have reached the end of the video
                 break
 
+            try:
+                self.current_state = self.queue.get(timeout=0.005)
+                if (self.current_state and self.current_state["radar"]):
+                    track_objects = self.current_state["radar"]["entities"]
+                else:
+                    track_objects = []
+                # print self.current_state
+            except Empty:
+                print 'no data'
+                pass
+
             for track in track_objects:
                 # Step 1
                 track_number = track["track_number"]
-                track_width = track[track_number+"_track_width"]
+                #track_width = track[track_number+"_track_width"]
+                track_width = 2.0
                 track_range = track[track_number+"_track_range"]
                 track_angle = track[track_number+"_track_angle"]
 
@@ -95,7 +98,8 @@ class CollisionAvoidance(Process):
                 # Step 3
                 # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
                 obj_range, obj_angle = convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, 0)
-                pixel_width = (focal_length * track_width * img_width) / (obj_range * sensor_size)
+                pixel_width = (focal_length * (track_width / 1000) * img_width) / ((obj_range / 1000) * sensor_size)
+                #print "Pixel width: " + str((pixel_width, focal_length, track_width, img_width, obj_range, sensor_size))
 
                 # Step 4
                 img_midpoint = (img_width / 2) + ((obj_angle / camera_field_of_view) * img_width)
@@ -108,11 +112,21 @@ class CollisionAvoidance(Process):
                 img_top = (img_height / 2) - (pixel_width / 2)
                 img_bottom = (img_height / 2) + (pixel_width / 2)
                 # TODO: Add bounds checks
-                top_left = (img_left_side, img_top)
-                bottom_right = (img_right_side, img_bottom)
+                top_left = (int(img_left_side), int(img_top))
+                bottom_right = (int(img_right_side), int(img_bottom))
 
                 # Step 6
                 cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
+                cv2.rectangle(img, top_left, (top_left[0] + 10, top_left[1] + 10), (0, 255, 0), 3)
+                cv2.rectangle(img, (200, 10), (500, 100), (0, 255, 0), 3)
+                #print "Top left: " + str(top_left)
+                #print "Bottom right: " + str(bottom_right)
+                
+            cv2.imshow("Data Visualizer", img)
+            key = cv2.waitKey(1) & 0xFF
+
+        camera.release()
+        cv2.destroyAllWindows()
 
 def convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
         triangle_opposite = distance_behind_radar + (track_range * math.cos(math.radians(track_angle)))
