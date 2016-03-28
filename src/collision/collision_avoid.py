@@ -3,7 +3,7 @@ import logging
 import numpy as np
 import cv2
 import math
-from . import CollisionConstants
+from collision_constants import CollisionConstants
 from Queue import Empty
 
 class CollisionAvoidance(Process):
@@ -104,7 +104,7 @@ class CollisionAvoidance(Process):
                 # Step 6
                 cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
 
-    def convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
+def convert_radar_to_camera(track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
         triangle_opposite = distance_behind_radar + (track_range * math.cos(math.radians(track_angle)))
         triangle_adj = distance_beside_radar + (track_range * math.sin(math.radians(track_angle)))
         obj_range = math.sqrt(math.pow(triangle_opposite, 2) + math.pow(triangle_adj, 2))

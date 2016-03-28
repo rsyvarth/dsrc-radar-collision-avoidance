@@ -70,10 +70,15 @@ import logging
 import argparse
 from multiprocessing import Queue
 
+VISUALIZER = True
+try:
+    import cv2
+except ImportError:
+    VISUALIZER = False
+
 from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
 from util.logger_conf import configure_logs
-
 
 def main():
     """ Main application entry point. """
@@ -88,8 +93,9 @@ def main():
     collision_avoid_queue = Queue()
 
     # Init the collision avoidance class
-    collision_avoid = CollisionAvoidance(collision_avoid_queue)
-    collision_avoid.start()
+    if VISUALIZER:
+        collision_avoid = CollisionAvoidance(collision_avoid_queue)
+        collision_avoid.start()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
     combiner = Combiner(collision_avoid_queue,
