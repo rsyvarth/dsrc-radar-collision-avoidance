@@ -2,6 +2,7 @@ from multiprocessing import Process
 import logging
 import numpy as np
 import cv2
+import math
 from . import CollisionConstants
 from Queue import Empty
 
@@ -43,7 +44,7 @@ class CollisionAvoidance(Process):
         """Eventually this will do cool math to detect collisions"""
         pass
 
-    def display(self, videofile, distance_from_radar, focal_length, sensor_size):
+    def display(self, videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
         """videopath: path to video that we will be using for image processing"""
         track_objects = self.current_state["entities"]
         """
@@ -75,6 +76,12 @@ class CollisionAvoidance(Process):
 
                 # Step 3
                 # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
+                obj_width, obj_range, obj_angle = convert_radar_to_camera(track_width, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle)
+                pixel_width = (focal_length * obj_width * img_width) / (obj_range * sensor_size)
                 # Step 4
                 # Step 5
                 # Step 6
+                cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
+
+    def convert_radar_to_camera(track_width, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
+        
