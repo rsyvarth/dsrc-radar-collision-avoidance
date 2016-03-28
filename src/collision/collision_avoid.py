@@ -1,4 +1,6 @@
 import logging
+import numpy as np
+import cv2
 
 class CollisionAvoidance(object):
     """ Takes combined data and displays predicted collisions.
@@ -23,7 +25,7 @@ class CollisionAvoidance(object):
         """Eventually this will do cool math to detect collisions"""
         pass
 
-    def display(self, videopath):
+    def display(self, videofile, distance_from_radar):
         """videopath: path to video that we will be using for image processing"""
         track_objects = self.current_state["entities"]
         """
@@ -35,15 +37,24 @@ class CollisionAvoidance(object):
         5. Calculate top left and bottom right corners of the track object
         6. Draw the appropriate rectangle
         """
-        for track in track_objects:
-            # Step 1
-            track_number = track["track_number"]
-            track_width = track[track_number+"_track_width"]
-            track_range = track[track_number+"_track_range"]
-            track_angle = track[track_number+"_track_angle"]
+        camera = cv2.VideoCapture(videofile)
+        while True:
+            # Loop until the video is done
+            ret, img = camera.read()
+            if not ret:
+                # We have reached the end of the video
+                break
 
-            # Step 2
-            # Step 3
-            # Step 4
-            # Step 5
-            # Step 6
+            for track in track_objects:
+                # Step 1
+                track_number = track["track_number"]
+                track_width = track[track_number+"_track_width"]
+                track_range = track[track_number+"_track_range"]
+                track_angle = track[track_number+"_track_angle"]
+
+                # Step 2
+                img_height, img_width = img.shape[:2]
+                # Step 3
+                # Step 4
+                # Step 5
+                # Step 6
