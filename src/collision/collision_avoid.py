@@ -65,7 +65,7 @@ class CollisionAvoidance(Process):
         5. Calculate top left and bottom right corners of the track object
         6. Draw the appropriate rectangle
         """
-        camera = cv2.VideoCapture(0)
+        camera = cv2.VideoCapture(videofile)
         while True:
             # Loop until the video is done
             ret, img = camera.read()
