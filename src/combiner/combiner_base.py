@@ -197,16 +197,15 @@ class Combiner(object):
         """ Updates the combined model using the latest dsrc & radar data. """
 
         # Perform a simple union of data currently
-        data = []
+        data = {'dsrc': None, 'radar': None}
         if self.dsrc_data:
-            data = data + self.dsrc_data
+            data['dsrc'] = self.dsrc_data
         if self.radar_data:
-            data = data + self.radar_data
+            data['radar'] = self.radar_data
 
         # Send updated information back to our callback function (Collision Avoidance)
         self.combined_data_queue.put(data)
 
         # sends logs to the combined file
         logging.getLogger('combined').info(json.dumps(data))
-        self.logger.info(json.dumps(data))
-
+        # self.logger.info(json.dumps(data))
