@@ -91,8 +91,8 @@ def configure_logs(log_level):
         # backupCount=5,               # If these are enabled, then logs must append
         # maxBytes=10485760,           # If these are enabled, then logs must append
     )
-    h_debug_visualizer = logging.handlers.RotatingFileHandler(
-        'logs/debug_visualizer.log',
+    h_debug_collision = logging.handlers.RotatingFileHandler(
+        'logs/debug_collision.log',
         mode='w',
         # backupCount=5,               # If these are enabled, then logs must append
         # maxBytes=10485760,           # If these are enabled, then logs must append
@@ -103,8 +103,8 @@ def configure_logs(log_level):
         # backupCount=5,               # If these are enabled, then logs must append
         # maxBytes=10485760,           # If these are enabled, then logs must append
     )
-    h_visualizer = logging.handlers.RotatingFileHandler(
-        'logs/visualizer.log',
+    h_collision = logging.handlers.RotatingFileHandler(
+        'logs/collision.log',
         mode='w',
         # backupCount=5,               # If these are enabled, then logs must append
         # maxBytes=10485760,           # If these are enabled, then logs must append
@@ -119,11 +119,11 @@ def configure_logs(log_level):
     h_combined.setLevel(logging.INFO)
     h_debug.setLevel(log_level)
     h_console.setLevel(log_level)
-    h_visualizer.setLevel(logging.INFO)
+    h_collision.setLevel(logging.INFO)
     h_debug_dsrc.setLevel(log_level)
     h_debug_radar.setLevel(log_level)
     h_debug_combined.setLevel(log_level)
-    h_debug_visualizer.setLevel(log_level)
+    h_debug_collision.setLevel(log_level)
 
     # set formatters
     h_radar.setFormatter(formatter_simple)
@@ -131,55 +131,55 @@ def configure_logs(log_level):
     h_combined.setFormatter(formatter_simple)
     h_debug.setFormatter(formatter_debug)
     h_console.setFormatter(formatter_debug)
-    h_visualizer.setFormatter(formatter_simple)
+    h_collision.setFormatter(formatter_simple)
     h_debug_dsrc.setFormatter(formatter_debug)
     h_debug_radar.setFormatter(formatter_debug)
     h_debug_combined.setFormatter(formatter_debug)
-    h_debug_visualizer.setFormatter(formatter_debug)
+    h_debug_collision.setFormatter(formatter_debug)
 
     # get every logger
     l_dsrc = logging.getLogger('dsrc')
     l_radar = logging.getLogger('radar')
     l_combined = logging.getLogger('combined')
     l_debug = logging.getLogger('debug')
-    l_visualizer = logging.getLogger('visualizer')
+    l_collision = logging.getLogger('collision')
     l_debug_dsrc = logging.getLogger('debug_dsrc')
     l_debug_radar = logging.getLogger('debug_radar')
     l_debug_combined = logging.getLogger('debug_combined')
-    l_debug_visualizer = logging.getLogger('debug_visualizer')
+    l_debug_collision = logging.getLogger('debug_collision')
 
     # logs don't propogate through to console
     l_dsrc.propagate = False
     l_radar.propagate = False
     l_combined.propagate = False
-    l_visualizer.propagate = False
+    l_collision.propagate = False
     l_debug.propagate = False
     l_debug_dsrc.propagate = False
     l_debug_radar.propagate = False
     l_debug_combined.propagate = False
-    l_debug_visualizer.propagate = False
+    l_debug_collision.propagate = False
 
     # set logger levels
     l_dsrc.setLevel(logging.DEBUG)
     l_radar.setLevel(logging.DEBUG)
     l_combined.setLevel(logging.DEBUG)
-    l_visualizer.setLevel(logging.DEBUG)
+    l_collision.setLevel(logging.DEBUG)
     l_debug.setLevel(log_level)
     l_debug_dsrc.setLevel(log_level)
     l_debug_radar.setLevel(log_level)
     l_debug_combined.setLevel(log_level)
-    l_debug_visualizer.setLevel(log_level)
+    l_debug_collision.setLevel(log_level)
 
     # add the file specific handlers
     l_dsrc.addHandler(h_dsrc)
     l_radar.addHandler(h_radar)
     l_combined.addHandler(h_combined)
-    l_visualizer.addHandler(h_visualizer)
+    l_collision.addHandler(h_collision)
     l_debug.addHandler(h_debug)
     l_debug_dsrc.addHandler(h_debug_dsrc)
     l_debug_radar.addHandler(h_debug_radar)
     l_debug_combined.addHandler(h_debug_combined)
-    l_debug_visualizer.addHandler(h_debug_visualizer)
+    l_debug_collision.addHandler(h_debug_collision)
 
     # add the console handlers
     # l_dsrc.addHandler(h_console)
@@ -189,5 +189,5 @@ def configure_logs(log_level):
     l_debug_dsrc.addHandler(h_console)
     l_debug_radar.addHandler(h_console)
     l_debug_combined.addHandler(h_console)
-    l_debug_visualizer.addHandler(h_console)
+    l_debug_collision.addHandler(h_console)
 

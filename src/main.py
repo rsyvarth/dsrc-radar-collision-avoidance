@@ -92,7 +92,7 @@ def main():
         args.log_dsrc, args.log_radar,
         args.dsrc_log_file, args.radar_log_file,
         args.dsrc_enabled, args.radar_enabled,
-        args.log_level.upper())
+        args.log_level.upper(), args.video_file)
 
     # This is a blocking call, will keep on going while parsers are going for dsrc and radar
     combiner.start()
@@ -134,6 +134,9 @@ def parse_args():
                         dest='log_level',
                         default="DEBUG",
                         help="Set the level for the debug logger")
+    parser.add_argument('--visualize',
+                        dest='video_file',
+                        help="Video file to draw over")
     # parser.set_defaults(log_radar=True,
     #                     log_level=True,
     #                     debug_level=logging.DEBUG,
