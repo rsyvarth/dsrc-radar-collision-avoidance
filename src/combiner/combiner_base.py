@@ -17,7 +17,7 @@ class Combiner(object):
     avoidance system.
     """
 
-    def __init__(self, callback, log_dsrc=True, log_radar=True,
+    def __init__(self, collision_avoid_queue, log_dsrc=True, log_radar=True,
                  dsrc_log_file=None, radar_log_file=None, dsrc_enabled=True,
                  radar_enabled=True, log_level="DEBUG"):
         """ Setup Combiner, initialize DSRC+Radar event dispatcher. """
@@ -28,7 +28,9 @@ class Combiner(object):
         self.radar_enabled = radar_enabled
 
         self.data_queue = Queue()
-        self.callback = callback
+        self.combined_data_queue = collision_avoid_queue
+        # self.callback = callback
+
 
         if self.dsrc_enabled:
             self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file, log_level=log_level)
@@ -202,7 +204,7 @@ class Combiner(object):
             data = data + self.radar_data
 
         # Send updated information back to our callback function (Collision Avoidance)
-        self.callback(data)
+        self.combined_data_queue.put(data)
 
         # sends logs to the combined file
         logging.getLogger('combined').info(json.dumps(data))

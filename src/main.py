@@ -68,6 +68,7 @@ import time
 import canlib
 import logging
 import argparse
+from multiprocessing import Queue
 
 from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
@@ -84,11 +85,14 @@ def main():
     if args.test_logger:
         test_logger()
 
+    collision_avoid_queue = Queue()
+
     # Init the collision avoidance class
-    collision_avoid = CollisionAvoidance()
+    collision_avoid = CollisionAvoidance(collision_avoid_queue)
+    collision_avoid.start()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
-    combiner = Combiner(collision_avoid.new_data_handler,
+    combiner = Combiner(collision_avoid_queue,
         args.log_dsrc, args.log_radar,
         args.dsrc_log_file, args.radar_log_file,
         args.dsrc_enabled, args.radar_enabled,

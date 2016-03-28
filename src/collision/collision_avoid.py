@@ -1,9 +1,11 @@
+from multiprocessing import Process
 import logging
 import numpy as np
 import cv2
 from . import CollisionConstants
+from Queue import Empty
 
-class CollisionAvoidance(object):
+class CollisionAvoidance(Process):
     """ Takes combined data and displays predicted collisions.
 
     This package is included mainly for the purpose of demonstration.
@@ -11,10 +13,24 @@ class CollisionAvoidance(object):
     collisions displaying warnings in a simple UI.
     """
 
-    def __init__(self):
+    def __init__(self, queue):
         """Setup the CA class, just empty state for now"""
+        Process.__init__(self)
+        self.queue = queue
         self.current_state = None
         self.constants = CollisionConstants()
+
+    def run(self):
+        print "Starting visualizer"
+
+        while True:
+            try:
+                self.current_state = self.queue.get(timeout=0.5)
+                # print self.current_state
+                print 'got data'
+            except Empty:
+                print 'no data'
+                pass
 
     def new_data_handler(self, data):
         """Called whenever new data arrives from the Combiner"""
