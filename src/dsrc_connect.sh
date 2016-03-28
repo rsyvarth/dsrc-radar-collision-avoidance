@@ -43,6 +43,11 @@ else
     done
 
     self_ip=$(ifconfig | grep 169.254 | awk '{print $2}' | sed -e s/addr://)
+    if [[ $self_ip == "" ]]; then
+      echo -n "Couldn't detect your IP, please enter it: "
+      read self_ip
+      echo ""
+    fi
     echo "Found current machine's IP to be $self_ip"
 fi
 
