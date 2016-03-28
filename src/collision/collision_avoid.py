@@ -1,6 +1,7 @@
 import logging
 import numpy as np
 import cv2
+from . import CollisionConstants
 
 class CollisionAvoidance(object):
     """ Takes combined data and displays predicted collisions.
@@ -13,6 +14,7 @@ class CollisionAvoidance(object):
     def __init__(self):
         """Setup the CA class, just empty state for now"""
         self.current_state = None
+        self.constants = CollisionConstants()
 
     def new_data_handler(self, data):
         """Called whenever new data arrives from the Combiner"""
