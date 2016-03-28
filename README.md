@@ -38,7 +38,6 @@ python shell and run the following command.
     ``` Python
     import cv2
     ```
-
 And you get an error about how the cv2 module is not found, then perform the
 following actions:
 
