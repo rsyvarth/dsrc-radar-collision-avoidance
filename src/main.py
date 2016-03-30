@@ -137,14 +137,25 @@ def parse_args():
                         dest='log_level',
                         default="DEBUG",
                         help="Set the level for the debug logger")
-    parser.add_argument('--visualize',
+    parser.add_argument('--load-video',
                         dest='video_file',
                         help="Video file to draw over")
+    parser.add_argument('--visualize',
+                        dest='visualize_dir',
+                        help="Path to directory to load all vizualization info from\
+                        (equivalent of passing load-dsrc-log, load-radar-log, load-video)")
     # parser.set_defaults(log_radar=True,
     #                     log_level=True,
     #                     debug_level=logging.DEBUG,
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    if args.visualize_dir:
+        args.dsrc_log_file = args.visualize_dir + '/dsrc.log'
+        args.radar_log_file = args.visualize_dir + '/radar.log'
+        args.video_file = args.visualize_dir + '/video.mp4'
+
+    return args
 
 def print_header():
     """ Print out a fancy little header with some status info. """
