@@ -68,4 +68,6 @@ class LogParser(Process):
         for i, d in enumerate(self.logs):
             self.callback(d['data'])
             if i < len(self.logs) - 1:
-                time.sleep((self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds() - self.log_overhead_adjustment)
+                sec = (self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds() - self.log_overhead_adjustment
+                if sec > 0:
+                    time.sleep(sec)
