@@ -68,7 +68,7 @@ class VideoOverlayVisualizer(object):
         # Step 3
         # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
         obj_range, obj_angle = self.convert_radar_to_camera(track_range, track_angle, self.distance_behind_radar, self.distance_beside_radar, 0)
-        pixel_width = (self.focal_length * (track_width / 1000) * img_width) / ((obj_range / 1000) * self.sensor_size)
+        pixel_width = (self.focal_length * (track_width * 1000) * img_width) / ((obj_range * 1000) * self.sensor_size)
         #print "Pixel width: " + str((pixel_width, focal_length, track_width, img_width, obj_range, sensor_size))
 
         # Step 4
