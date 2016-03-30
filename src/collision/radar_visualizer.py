@@ -34,9 +34,9 @@ class RadarVisualizer(object):
 
             x_pos = math.cos(track_angle)*track_range*4
             y_pos = math.sin(track_angle)*track_range*4
-            
+
             cv2.circle(img, (IMG_WIDTH/2 + int(x_pos), IMG_HEIGHT - int(y_pos) - 10), 5, (255, 255, 255))
 
-        cv2.imshow("Circles!", img)
+        cv2.imshow("Radar", img)
         #cv2.waitKey(1)
-        
+

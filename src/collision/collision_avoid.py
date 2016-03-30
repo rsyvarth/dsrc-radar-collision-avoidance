@@ -41,8 +41,10 @@ class CollisionAvoidance(Process):
         #video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 160, .002, .127)
         radar_viz = RadarVisualizer()
         dsrc_viz = DsrcVisualizer()
-    
+
         while True:
+            if self.queue.qsize() > 2:
+                print 'WARNING: The queue depth is %s, we are behind real time!' % self.queue.qsize()
             try:
                 # Get without waiting, throws exception if no new data
                 self.current_state = self.queue.get(False)
@@ -60,6 +62,6 @@ class CollisionAvoidance(Process):
 
             # Display current frames for 1ms
             cv2.waitKey(1)
-            
+
         # Cleanup on windows
         cv2.destroyAllWindows()
