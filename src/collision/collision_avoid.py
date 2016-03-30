@@ -38,7 +38,7 @@ class CollisionAvoidance(Process):
             return
 
         # Init vizualizers
-        #video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 160, .002, .127)
+        # video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 160, .002, .127)
         radar_viz = RadarVisualizer()
         dsrc_viz = DsrcVisualizer()
 
@@ -56,7 +56,7 @@ class CollisionAvoidance(Process):
             #    print "no data"
                 continue
 
-            #video_viz.update(self.current_state)
+            # video_viz.update(self.current_state)
             radar_viz.update(self.current_state)
             dsrc_viz.update(self.current_state)
 
