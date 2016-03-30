@@ -5,8 +5,8 @@ except ImportError:
     pass
 
 
-class VideoOverlayVisualizer(Object):
-    def __init__(videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
+class VideoOverlayVisualizer(object):
+    def __init__(self, videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
         """
         videopath: path to video that we will be using for image processing
         distance_behind_radar: how far the camera is behind the radar in the vehicle (m)
