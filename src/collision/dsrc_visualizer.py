@@ -26,7 +26,7 @@ class DsrcVisualizer(object):
             self.center_y = msg['lat']
 
         #print self.center_x - msg['long']
-        x_pos = IMG_WIDTH/2 + (self.center_x - msg['long'])*300000
+        x_pos = IMG_WIDTH/2 - (self.center_x - msg['long'])*300000
         y_pos = IMG_HEIGHT/2 + (self.center_y - msg['lat'])*300000
 
         cv2.circle(self.img, (int(x_pos), int(y_pos)), 5, (255,255,255))
