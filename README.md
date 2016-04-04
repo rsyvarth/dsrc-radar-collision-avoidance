@@ -1,15 +1,25 @@
 # dsrc-radar-collision-avoidance
 
+Software for the combined DSRC/radar system and all of the instructions
+necessary to install both the Kvaser LeafLight v2 Drivers, use the Delphi DSRC
+module, and how to get the visualizer demo up and running using the Python
+OpenCV API.
+
+For setting up the hardware and software, issues with the project, or all other
+questions please view the
+[wiki](https://github.com/rsyvarth/dsrc-radar-collision-avoidance/wiki).
+
 ## Installing Kvaser LeafLight v2 Drivers
 
-Drivers for the Kvaser LeafLight v2 USB device can be found here:
+Drivers for the Kvaser LeafLight v2 USB device can be found
+[here](https://www.kvaser.com/products/kvaser-leaf-light-hs-v2/#/!).
 
-https://www.kvaser.com/products/kvaser-leaf-light-hs-v2/#/!
 
 For this project we will be using the linux version of CAN lib and the Python
-Library Extensions. The Linux Drivers can be fund by going to the link provided
+Library Extensions. The Linux Drivers can be found by going to the link provided
 above, clicking on Downloads, and clicking on "Kvaser LINUX Driver and SDK".
-Version 5.13 has already be installed and cloned into this repository
+Version 5.13 of the Kvaser Linux drivers and SDK has already be installed and
+cloned into this repository.
 
 Once the drivers have been downloaded on on a linux distribution, run the
 following commands in order to install the derivers on your machine.
