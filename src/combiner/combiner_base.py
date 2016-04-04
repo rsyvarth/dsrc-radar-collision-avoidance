@@ -157,7 +157,7 @@ class Combiner(object):
                 track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
                 track[track_number + "_track_lat_rate"] = self.hex_to_int(data[track_number + "_track_lat_rate"], 6) / 4
                 track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
-                track[track_number + "_track_power"] = self.hex_to_int(data[track_number + "_track_power"], 5)
+                track[track_number + "_track_power"] = -10 + data[track_number + "_track_power"]
 
                 # Attempting to get absolute values for speeds
                 # Note: Currently only basing this off range_rate and vehicle_speed
@@ -176,8 +176,8 @@ class Combiner(object):
                 #print("Lateral: " + str(lat_rate))
                 #print("Rate: " + str(range_rate))
                 #print("Speed: " + str(track[track_number + "_track_absolute_rate"]))
-
-                new_data['entities'].append(track)
+                if track[track_number + "_track_power"] > 2:
+                    new_data['entities'].append(track)
                 track_id += 1;
             except KeyError:
                 # Shouldn't happen

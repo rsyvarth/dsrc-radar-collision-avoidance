@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import math
 
+CHANNELS = 3
 ENABLE = True
 try:
     import cv2
@@ -31,6 +32,20 @@ class CollisionAvoidance(Process):
         self.current_state = None
         self.constants = CollisionConstants()
 
+
+    def position_windows(self):
+        cv2.moveWindow('Data Visualizer', 0, 0)
+        ret, img = self.video_viz.camera.read()
+        if not ret:
+            return
+
+        img_height, img_width = img.shape[:2]
+        self.radar_viz = RadarVisualizer(img_height/2,img_height/2, CHANNELS)
+        self.dsrc_viz = DsrcVisualizer(img_height/2,img_height/2, CHANNELS)
+        cv2.moveWindow('Radar', img_width, 0)
+        cv2.moveWindow('DSRC', img_width, img_height/2)
+        return
+
     def run(self):
         print "Starting visualizer"
         if not ENABLE:
@@ -38,10 +53,11 @@ class CollisionAvoidance(Process):
             return
 
         # Init vizualizers
-        # video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 160, .002, .127)
-        radar_viz = RadarVisualizer()
-        dsrc_viz = DsrcVisualizer()
 
+        self.video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 78.58, \
+        .022, .00616)
+
+        self.position_windows()
         while True:
             if self.queue.qsize() > 2:
                 print 'WARNING: The queue depth is %s, we are behind real time!' % self.queue.qsize()
@@ -56,12 +72,15 @@ class CollisionAvoidance(Process):
             #    print "no data"
                 continue
 
-            # video_viz.update(self.current_state)
-            radar_viz.update(self.current_state)
-            dsrc_viz.update(self.current_state)
+
+            if not self.video_viz.update(self.current_state):
+                break
+
+            self.radar_viz.update(self.current_state)
+            self.dsrc_viz.update(self.current_state)
 
             # Display current frames for 1ms
-            cv2.waitKey(1)
+            cv2.waitKey(40)
 
         # Cleanup on windows
-        cv2.destroyAllWindows()
+        #cv2.destroyAllWindows()
