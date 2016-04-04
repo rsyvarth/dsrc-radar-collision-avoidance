@@ -87,8 +87,9 @@ def main():
     collision_avoid_queue = Queue()
 
     # Init the collision avoidance class
-    collision_avoid = CollisionAvoidance(collision_avoid_queue, args.video_file)
-    collision_avoid.start()
+    if args.visualize_dir:
+        collision_avoid = CollisionAvoidance(collision_avoid_queue, args.video_file)
+        collision_avoid.start()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
     combiner = Combiner(collision_avoid_queue,
