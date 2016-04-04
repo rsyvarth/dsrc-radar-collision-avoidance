@@ -208,4 +208,4 @@ class Combiner(object):
 
         # sends logs to the combined file
         logging.getLogger('combined').info(json.dumps(data))
-        # self.logger.info(json.dumps(data))
+        self.logger.info(json.dumps(data))
