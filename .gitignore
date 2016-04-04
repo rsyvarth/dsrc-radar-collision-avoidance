@@ -65,6 +65,8 @@ src/logs/*.log
 
 # Sphinx documentation
 docs/_build/
+docs/_templates/
+docs/_static/
 
 # canlib binaries
 linuxcan/canlib/libcanlib.so.1.1.0

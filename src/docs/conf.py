@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # dsrc-radar-collision-avoidance documentation build configuration file, created by
-# sphinx-quickstart on Mon Apr  4 13:32:40 2016.
+# sphinx-quickstart on Mon Apr  4 14:26:02 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -32,13 +32,6 @@ import os
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.todo',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,8 +50,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'dsrc-radar-collision-avoidance'
-copyright = '2016, Bryce Arden, Ryan Meek, Robert Syvarth, Jon Reynolds, Phillip Lemons, Kevin Rosen'
-author = 'Bryce Arden, Ryan Meek, Robert Syvarth, Jon Reynolds, Phillip Lemons, Kevin Rosen'
+copyright = '2016, Bryce Arden, Kevin Rosen, Robert Syvarth, Jon Reynolds, Ryan Meek, Phillip Lemons'
+author = 'Bryce Arden, Kevin Rosen, Robert Syvarth, Jon Reynolds, Ryan Meek, Phillip Lemons'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -112,7 +105,7 @@ pygments_style = 'sphinx'
 #keep_warnings = False
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
-todo_include_todos = True
+todo_include_todos = False
 
 
 # -- Options for HTML output ----------------------------------------------
@@ -236,7 +229,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'dsrc-radar-collision-avoidance.tex', 'dsrc-radar-collision-avoidance Documentation',
-     'Bryce Arden, Ryan Meek, Robert Syvarth, Jon Reynolds, Phillip Lemons, Kevin Rosen', 'manual'),
+     'Bryce Arden, Kevin Rosen, Robert Syvarth, Jon Reynolds, Ryan Meek, Phillip Lemons', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -295,7 +288,3 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
-
-
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
