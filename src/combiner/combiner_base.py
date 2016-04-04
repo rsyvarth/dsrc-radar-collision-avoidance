@@ -24,6 +24,8 @@ class Combiner(object):
         self.dsrc_data = None
         self.radar_data = None
 
+        self.data_count = 0
+
         self.dsrc_enabled = dsrc_enabled
         self.radar_enabled = radar_enabled
 
@@ -208,4 +210,22 @@ class Combiner(object):
 
         # sends logs to the combined file
         logging.getLogger('combined').info(json.dumps(data))
-        self.logger.info(json.dumps(data))
+
+        self.data_count = self.data_count + 1
+        if self.data_count > 20:
+            if data['dsrc'] and data['radar']:
+                msg = {
+                    'dsrc': {
+                        'speed': data['dsrc']['message']['speed'],
+                        'lat': data['dsrc']['message']['lat'],
+                        'long': data['dsrc']['message']['long'],
+                        'remotes': len(data['dsrc']['remote_messages'])
+                    },
+                    'radar': {
+                        'tracks': len(data['radar']['entities'])
+                    }
+                }
+            else:
+                msg = 'Missing data member dsrc or radar'
+            self.logger.info(msg)
+            self.data_count = 0
