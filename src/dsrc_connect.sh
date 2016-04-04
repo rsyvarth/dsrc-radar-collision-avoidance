@@ -7,6 +7,10 @@ echo "This script will connect to and setup the Cohda DSRC Module for use"
 echo "-----------------------------------"
 echo ""
 
+echo -n "Are you on Windows [y/n]: "
+read -n 1 using_windows
+echo ""
+
 echo -n "Are you connected via USB [y/n]: "
 read -n 1 using_usb
 echo ""
@@ -54,7 +58,11 @@ fi
 echo "-----------------------------------"
 echo "Running: ping $ip"
 echo "-----------------------------------"
-ping -c 1 -W 1000 $ip
+if [[ $using_windows == "y" ]]; then
+    ping -n 1 -w 1000 $ip
+else
+    ping -c 1 -W 1000 $ip
+fi
 if [[ $? != "0" ]]; then
     echo "Error: Cannot connect to host, is everything connected?"
     exit 84115
