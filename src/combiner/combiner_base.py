@@ -5,7 +5,11 @@ import math
 import logging
 from multiprocessing import Queue
 from Queue import Empty
+from combiner.location_filter import location_filter
+from combiner.kalman_filter import kalman_filter
 
+KALMAN_FILTER = 1;
+LOCATION_FILTER = 1;
 
 class Combiner(object):
     """ Takes DSRC+Radar information and forms a single model of the environment.
@@ -205,6 +209,11 @@ class Combiner(object):
         if self.radar_data:
             data['radar'] = self.radar_data
 
+        #data filtering happens here
+        if KALMAN_FILTER:
+            data = kalman_filter(data)
+        if LOCATION_FILTER:
+            data = location_filter(data)
         # Send updated information back to our callback function (Collision Avoidance)
         self.combined_data_queue.put(data)
 

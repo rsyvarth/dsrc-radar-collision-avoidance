@@ -44,8 +44,8 @@ class DsrcVisualizer(object):
         
         for point in self.points:
             #print self.center_x - msg['long']
-            x_pos = self.width/2 - (self.center_x - msg['long'])*300000
-            y_pos = self.height/2 + (self.center_y - msg['lat'])*300000
+            x_pos = self.width/2 - (self.center[0] - point[0])*300000
+            y_pos = self.height/2 + (self.center[1] - point[1])*300000
 
         #print self.center_x - msg['long']
 
