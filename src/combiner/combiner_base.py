@@ -153,22 +153,22 @@ class Combiner(object):
                 track = {}
                 track["track_number"] = track_number
                 track[track_number + "_track_status"] = data[track_number + "_track_status"]
-                track[track_number + "_track_range"] = data[track_number + "_track_range"] / 10
-                track[track_number + "_track_range_rate"] = self.hex_to_int(data[track_number + "_track_range_rate"], 14) / 100
-                track[track_number + "_track_range_accel"] = self.hex_to_int(data[track_number + "_track_range_accel"], 10) / 20
-                track[track_number + "_track_angle"] = self.hex_to_int(data[track_number + "_track_angle"], 10) / 10
-                track[track_number + "_track_width"] = data[track_number + "_track_width"] / 2
+                track[track_number + "_track_range"] = data[track_number + "_track_range"] / 10.0
+                track[track_number + "_track_range_rate"] = self.hex_to_int(data[track_number + "_track_range_rate"], 14) / 100.0
+                track[track_number + "_track_range_accel"] = self.hex_to_int(data[track_number + "_track_range_accel"], 10) / 20.0
+                track[track_number + "_track_angle"] = self.hex_to_int(data[track_number + "_track_angle"], 10) / 10.0
+                track[track_number + "_track_width"] = data[track_number + "_track_width"] / 2.0
                 track[track_number + "_track_oncoming"] = data[track_number + "_track_oncoming"]
-                track[track_number + "_track_lat_rate"] = self.hex_to_int(data[track_number + "_track_lat_rate"], 6) / 4
+                track[track_number + "_track_lat_rate"] = self.hex_to_int(data[track_number + "_track_lat_rate"], 6) / 4.0
                 track[track_number + "_track_moving"] = data[track_number + "_track_moving"]
                 track[track_number + "_track_power"] = -10 + data[track_number + "_track_power"]
 
                 # Attempting to get absolute values for speeds
                 # Note: Currently only basing this off range_rate and vehicle_speed
                 absolute_speed = vehicle_speed # m/s
-                angle = self.hex_to_int(track[track_number + "_track_angle"], 10) / 10
-                lat_rate = self.hex_to_int(track[track_number + "_track_lat_rate"], 6) / 4
-                range_rate = self.hex_to_int(track[track_number + "_track_range_rate"], 14) / 100
+                angle = self.hex_to_int(track[track_number + "_track_angle"], 10) / 10.0
+                lat_rate = self.hex_to_int(track[track_number + "_track_lat_rate"], 6) / 4.0
+                range_rate = self.hex_to_int(track[track_number + "_track_range_rate"], 14) / 100.0
 
                 radians = math.radians(angle)
                 abs_speed_sin = lat_rate / math.sin(radians) if math.sin(radians) != 0 else lat_rate
