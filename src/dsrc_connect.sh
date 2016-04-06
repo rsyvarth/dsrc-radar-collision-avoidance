@@ -101,7 +101,8 @@ echo "-----------------------------------"
 # Kill running cansend script if one exists
 $sshpass_prefix ssh duser@$ip "sudo pkill -9 cansend"
 # Start up a new cansend script
-$sshpass_prefix ssh duser@$ip "watch -n0 cansend can0 7DF#02010D0000000000 &"
+# $sshpass_prefix ssh duser@$ip "watch -n0 cansend can0 7DF#02010D0000000000 &"
+$sshpass_prefix ssh duser@$ip "while true; do sleep 0.1; cansend can0 7DF#02010D0000000000; done &"
 echo ""
 
 echo "-----------------------------------"
