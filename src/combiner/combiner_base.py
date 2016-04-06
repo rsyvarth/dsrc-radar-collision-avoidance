@@ -8,8 +8,8 @@ from Queue import Empty
 from combiner.location_filter import location_filter
 from combiner.kalman_filter import kalman_filter
 
-KALMAN_FILTER = 1;
-LOCATION_FILTER = 1;
+KALMAN_FILTER = 0;
+LOCATION_FILTER = 0;
 
 class Combiner(object):
     """ Takes DSRC+Radar information and forms a single model of the environment.
@@ -210,10 +210,11 @@ class Combiner(object):
             data['radar'] = self.radar_data
 
         #data filtering happens here
-        if KALMAN_FILTER:
-            data = kalman_filter(data)
-        if LOCATION_FILTER:
-            data = location_filter(data)
+        if self.dsrc_data and self.radar_data:
+            if KALMAN_FILTER:
+                data = kalman_filter(data)
+            if LOCATION_FILTER:
+                data = location_filter(data)
         # Send updated information back to our callback function (Collision Avoidance)
         self.combined_data_queue.put(data)
 

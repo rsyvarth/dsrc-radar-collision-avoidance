@@ -1,5 +1,4 @@
 import math
-import imutils
 import numpy as np
 try:
     import cv2
@@ -51,7 +50,6 @@ class VideoOverlayVisualizer(object):
             cv2.destroyAllWindows()
             return False
 
-        #img = imutils.resize(img, width=300)
         track_objects = []
         if (current_state and current_state["radar"]):
             track_objects = current_state["radar"]["entities"]
