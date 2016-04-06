@@ -136,7 +136,7 @@ class Combiner(object):
         # Now we deal with all of the tracks
         new_data['entities'] = list()
         track_id = 1
-        vehicle_speed = new_data['vehicle_speed'] # m/s
+        vehicle_speed = new_data['vehicle_speed'] if 'vehicle_speed' in new_data else 0 # m/s
         for i in range(1,65):
             track_number = str(track_id)
             try:
