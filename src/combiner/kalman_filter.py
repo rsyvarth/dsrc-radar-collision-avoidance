@@ -1,6 +1,5 @@
 
 
-
 def test_one():
     data = dict()
     data['radar'] = dict()
@@ -82,48 +81,58 @@ def test_three():
     print "Test three <3> " + str(data['radar']['entities'])
     data['radar']['entities'] = list()
 
+
 def main():
     test_one()
     test_two()
     test_three()
 
 
+SET_TOTAL = 3
+SETS_IN = 2
 #list of dictionaries
-kalman_old_data = list()
-kalman_old_data.append(dict())
-kalman_old_data.append(dict())
+kalman_old_data = [{} for k in range(SET_TOTAL)]
 
 #currently this function is only set up for radar noise
 def kalman_filter(data):
+    global kalman_old_data
     unfiltered_data = dict()
     #filtered_data = {}, just going to modify data
     new_entities_list = list()
     new_entities_hash = dict()
+    appended_list = list()
 
-
-    #only need to iterate over one two of the lists
-    appended_list = data['radar']['entities'] + list(kalman_old_data[0].values())
-    for ent in appended_list :
-        count = 1
+    for ent in data['radar']['entities']:
         track_number = ent['track_number']
-        #unfiltered_data[track_number] = ent;
-        if track_number in kalman_old_data[0]:
-            count += 1
-        if track_number in kalman_old_data[1]:
-            count += 1
-        if count >= 2 and (not (track_number in new_entities_hash)):
+        unfiltered_data[track_number] = ent
+
+
+    kalman_old_data = [unfiltered_data] + kalman_old_data[:-1]
+    #print "here is kalman_old_data " + str(kalman_old_data)
+
+    for i in range(0,SET_TOTAL):
+        appended_list = appended_list + list(kalman_old_data[i].values())
+
+    #print "here is appended_list : " + str(appended_list)
+    for ent in appended_list:
+        count = 0
+        track_number = ent['track_number']
+        for i in range(0,SET_TOTAL):
+            if track_number in kalman_old_data[i]:
+                count += 1
+                #print "incrementing count to: " + str(count)
+
+        if count >= SETS_IN and (not (track_number in new_entities_hash)):
             new_entities_list.append(ent)
             new_entities_hash[track_number] = 1
 
     #construct a hash of unfilitered data, makes it easier to test for existence
     #in next function call
-    for ent in data['radar']['entities']:
-        track_number = ent['track_number']
-        unfiltered_data[track_number] = ent
+
 
     data['radar']['entities'] = new_entities_list
-    kalman_old_data[1] = kalman_old_data[0]
-    kalman_old_data[0] = unfiltered_data
+    #kalman_old_data[1] = kalman_old_data[0]
+    #kalman_old_data[0] = unfiltered_data
     return data
 
 

@@ -8,8 +8,8 @@ from Queue import Empty
 from combiner.location_filter import location_filter
 from combiner.kalman_filter import kalman_filter
 
-KALMAN_FILTER = 0;
-LOCATION_FILTER = 0;
+KALMAN_FILTER = 1;
+LOCATION_FILTER = 1;
 
 class Combiner(object):
     """ Takes DSRC+Radar information and forms a single model of the environment.

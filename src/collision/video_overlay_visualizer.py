@@ -78,11 +78,11 @@ class VideoOverlayVisualizer(object):
         #print "obj_range: " + str(obj_range) + ", track_range: "+str(track_range)
         pixel_width = ((self.focal_length) * (track_width) *
 img_width) / ((obj_range) * (self.sensor_size))
-        print "Pixel width: " + str((pixel_width, self.focal_length, img_width, obj_range, self.sensor_size))
+        #print "Pixel width: " + str((pixel_width, self.focal_length, img_width, obj_range, self.sensor_size))
 
         # Step 4
         img_midpoint = (img_width / 2) + ((obj_angle / self.camera_field_of_view) * img_width)
-        print "img_midpoint: " + str(img_midpoint) + " obj_angle: "+str(obj_angle)
+        #print "img_midpoint: " + str(img_midpoint) + " obj_angle: "+str(obj_angle)
 
         # Step 5
         # For now, drawing squares and drawing simply on the middle of the image
@@ -99,8 +99,8 @@ img_width) / ((obj_range) * (self.sensor_size))
         cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
         cv2.rectangle(img, top_left, (top_left[0] + 10, top_left[1] + 10), (0, 255, 0), 3)
         cv2.rectangle(img, (200, 10), (500, 100), (0, 255, 0), 3)
-        print "Top left: " + str(top_left)
-        print "Bottom right: " + str(bottom_right)
+        #print "Top left: " + str(top_left)
+        #print "Bottom right: " + str(bottom_right)
 
     def convert_radar_to_camera(self, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
             triangle_opposite = distance_behind_radar + (track_range * math.cos(math.radians(track_angle)))
