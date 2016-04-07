@@ -3,6 +3,7 @@ from Queue import Empty
 import logging
 import numpy as np
 import math
+import signal
 
 CHANNELS = 3
 ENABLE = True
@@ -31,6 +32,12 @@ class CollisionAvoidance(Process):
         self.video_file = video_file
         self.current_state = None
         self.constants = CollisionConstants()
+        signal.signal(signal.SIGINT, self.signal_handler)
+
+    def signal_handler(self, signal, frame):
+        print 'You pressed Ctrl+C!'
+        self.terminate()
+
 
 
     def position_windows(self):

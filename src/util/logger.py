@@ -20,7 +20,7 @@ class LogParser(Process):
 
     def signal_handler(self, signal, frame):
         print 'You pressed Ctrl+C!'
-        # self.terminate()
+        self.terminate()
 
     def validate_log_line(self, line):
         """
