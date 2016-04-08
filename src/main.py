@@ -96,7 +96,7 @@ def main():
         args.log_dsrc, args.log_radar,
         args.dsrc_log_file, args.radar_log_file,
         args.dsrc_enabled, args.radar_enabled,
-        args.log_level.upper())
+        args.log_level.upper(), args.log_config)
 
     # This is a blocking call, will keep on going while parsers are going for dsrc and radar
     combiner.start()
@@ -155,6 +155,7 @@ def parse_args():
         args.dsrc_log_file = args.visualize_dir + '/dsrc.log'
         args.radar_log_file = args.visualize_dir + '/radar.log'
         args.video_file = args.visualize_dir + '/video.mp4'
+        args.log_config = args.visualize_dir + '/config.json'
 
     return args
 

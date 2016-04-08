@@ -7,13 +7,14 @@ import signal, os
 class LogParser(Process):
     """ Base log parsing class to hold common parsing functions. """
 
-    def __init__(self, callback=None, log_file=None):
+    def __init__(self, callback=None, log_file=None, log_config=None):
         """ Setup the log parser. """
         Process.__init__(self)
         self.callback = callback
+        self.log_config = self.parse_config(log_config)
         self.logs = self.generate_logs(log_file)
         #Currently log parsing adds around 0.01 sec of overhead so we need to adjust our sleeps for this
-        self.log_overhead_adjustment = 0.01
+        #self.log_overhead_adjustment = 0.05
 
         # self.logger = logging.getLogger('debug')
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -34,7 +35,34 @@ class LogParser(Process):
                    line.split('; ')[0],
                    '%Y-%m-%d %H:%M:%S.%f'
         )
-        return True if date_obj else False
+
+        if not date_obj:
+            return False
+
+        if 'video_start' in self.log_config and date_obj < self.log_config['video_start']:
+            return False
+
+        if 'end' in self.log_config and date_obj > self.log_config['end']:
+            return False
+
+        return True
+
+    def parse_config(self, config_file):
+        if not config_file:
+            return {}
+
+        with open(config_file, 'r') as content_file:
+            content = content_file.read()
+            data = json.loads(content)
+
+            if 'video_start' in data:
+                data['video_start'] = dt.datetime.strptime(data['video_start'], '%Y-%m-%d %H:%M:%S.%f')
+
+            if 'end' in data:
+                data['end'] = dt.datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S.%f')
+
+            print data
+            return data
 
     def generate_logs(self, log_file):
         """
@@ -46,28 +74,38 @@ class LogParser(Process):
         current_logs = []
         for line in open(log_file, 'r'):
             # only look at valid lines
-            if self.validate_log_line(line):
-                line_split = line.split('; ')
-                date_str = line_split[0]
-                data = json.loads(line_split[1])
-                date_obj = dt.datetime.strptime(
-                    date_str,
-                    '%Y-%m-%d %H:%M:%S.%f'
-                )
-                data_dict = {
-                    "time": date_obj,       # entire datetime obj
-                    "data": data            # data from original msg
-                }
-                current_logs.append(data_dict)
+            if not self.validate_log_line(line):
+                continue;
+
+            line_split = line.split('; ')
+            date_str = line_split[0]
+            data = json.loads(line_split[1])
+            date_obj = dt.datetime.strptime(
+                date_str,
+                '%Y-%m-%d %H:%M:%S.%f'
+            )
+            data_dict = {
+                "time": date_obj,       # entire datetime obj
+                "data": data            # data from original msg
+            }
+            current_logs.append(data_dict)
         return current_logs
 
     def run(self):
         """ Emit the log data in real-time. """
 
+        start_real = dt.datetime.now()
+        start_log = self.logs[0]['time']
+        diff = (start_real - start_log).total_seconds()
+        print 'Diff', diff
+
         # iterate throuhg a list of dictionaries
-        for i, d in enumerate(self.logs):
-            self.callback(d['data'])
-            if i < len(self.logs) - 1:
-                sec = (self.logs[i + 1]['time'] - self.logs[i]['time']).total_seconds() - self.log_overhead_adjustment
-                if sec > 0:
-                    time.sleep(sec)
+        i = 0
+        while i < len(self.logs):
+            sec_diff = (dt.datetime.now() - self.logs[i]['time']).total_seconds()
+
+            if sec_diff >= diff:
+                self.callback(self.logs[i]['data'])
+                i = i + 1
+            else:
+                time.sleep(0.005)

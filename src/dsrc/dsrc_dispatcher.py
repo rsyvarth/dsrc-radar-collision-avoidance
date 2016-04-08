@@ -11,13 +11,13 @@ class DsrcEventDispatcher(object):
     I/O on the application's performance. The dispatcher also passes data back
     to the callback function (Combiner) when new data is available.
     """
-    def __init__(self, queue, log=True, log_file=None, log_level="DEBUG"):
+    def __init__(self, queue, log=True, log_file=None, log_level="DEBUG", log_config=None):
         """ Initialize dispatcher, instantiate the proper parser for the current environment. """
         self.queue = queue
         if not log_file:
             self.provider = DsrcDataParser(log=log, callback=self.on_message, log_level=log_level)
         else:
-            self.provider = DsrcLogParser(log_file=log_file, callback=self.on_message)
+            self.provider = DsrcLogParser(log_file=log_file, callback=self.on_message, log_config=log_config)
 
     def start(self):
         """ Start running the parser's thread (After this data starts flowing). """

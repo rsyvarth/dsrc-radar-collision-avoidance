@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import math
 import signal
+import datetime
 
 CHANNELS = 3
 ENABLE = True
@@ -61,18 +62,29 @@ class CollisionAvoidance(Process):
 
         # Init vizualizers
 
-        self.video_viz = VideoOverlayVisualizer(self.video_file, 1, 1, 0, 78.58, \
-        .022, .00616)
+        # self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 94.4, \
+        # 21.0/1000, 4.55/1000)
+
+        self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 64.6, \
+        28.0/1000, 4.55/1000)
 
         self.position_windows()
+        remainder = 0;
         while True:
-            if self.queue.qsize() > 2:
-                print 'WARNING: The queue depth is %s, we are behind real time!' % self.queue.qsize()
-            try:
-                # Get without waiting, throws exception if no new data
-                self.current_state = self.queue.get(False)
-            except Empty:
-                pass
+            start = datetime.datetime.now()
+            while self.queue.qsize() > 2:
+                try:
+                    self.current_state = self.queue.get(False)
+                except Empty:
+                    break
+
+            # if self.queue.qsize() > 2:
+            #     print 'WARNING: The queue depth is %s, we are behind real time!' % self.queue.qsize()
+            # try:
+            #     # Get without waiting, throws exception if no new data
+            #     self.current_state = self.queue.get(False)
+            # except Empty:
+            #     pass
                 #print 'no data'
 
             if not self.current_state:
@@ -86,8 +98,13 @@ class CollisionAvoidance(Process):
             self.radar_viz.update(self.current_state)
             self.dsrc_viz.update(self.current_state)
 
-            # Display current frames for 1ms
-            cv2.waitKey(40)
+            # Calculate how long before next frame
+            end = datetime.datetime.now()
+            duration_ms = (end - start).total_seconds() * 1000
+            total_delay = float(1000)/self.video_viz.fps - duration_ms + remainder
+            remainder = int(total_delay) - total_delay
+            # print "FPS ", self.video_viz.fps, " Delay ", float(1000)/self.video_viz.fps, " Loop ", duration_ms
+            cv2.waitKey(int(total_delay))
 
         # Cleanup on windows
         #cv2.destroyAllWindows()

@@ -21,6 +21,7 @@ class VideoOverlayVisualizer(object):
         sensor_size: size of the camera sensor (mm; believe we want the height)
         """
         self.camera = cv2.VideoCapture(videofile)
+        self.fps = self.camera.get(cv2.CAP_PROP_FPS)
 
         self.distance_behind_radar = distance_behind_radar
         self.distance_beside_radar = distance_beside_radar
@@ -62,10 +63,13 @@ class VideoOverlayVisualizer(object):
         # key = cv2.waitKey(1) & 0xFF
 
     def draw_box_for_track(self, track, img):
+        # HACK FOR A VER OFFSET FOR NOW
+        vertical_offset = 70
+
         # Step 1
         track_number = track["track_number"]
         #track_width = track[track_number+"_track_width"]
-        track_width = 2.0
+        track_width = 0.2
         track_range = track[track_number+"_track_range"]
         track_angle = track[track_number+"_track_angle"]
 
@@ -92,13 +96,11 @@ img_width) / ((obj_range) * (self.sensor_size))
         img_top = (img_height / 2) - (pixel_width / 2)
         img_bottom = (img_height / 2) + (pixel_width / 2)
         # TODO: Add bounds checks
-        top_left = (int(img_left_side), int(img_top))
-        bottom_right = (int(img_right_side), int(img_bottom))
+        top_left = (int(img_left_side), int(img_top + vertical_offset))
+        bottom_right = (int(img_right_side), int(img_bottom + vertical_offset))
 
         # Step 6
         cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
-        cv2.rectangle(img, top_left, (top_left[0] + 10, top_left[1] + 10), (0, 255, 0), 3)
-        cv2.rectangle(img, (200, 10), (500, 100), (0, 255, 0), 3)
         #print "Top left: " + str(top_left)
         #print "Bottom right: " + str(bottom_right)
 

@@ -23,7 +23,7 @@ class Combiner(object):
 
     def __init__(self, collision_avoid_queue, log_dsrc=True, log_radar=True,
                  dsrc_log_file=None, radar_log_file=None, dsrc_enabled=True,
-                 radar_enabled=True, log_level="DEBUG"):
+                 radar_enabled=True, log_level="DEBUG", log_config=None):
         """ Setup Combiner, initialize DSRC+Radar event dispatcher. """
         self.dsrc_data = None
         self.radar_data = None
@@ -39,9 +39,9 @@ class Combiner(object):
 
 
         if self.dsrc_enabled:
-            self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file, log_level=log_level)
+            self.dsrc_event_dispatcher = DsrcEventDispatcher(self.data_queue, log=log_dsrc, log_file=dsrc_log_file, log_level=log_level, log_config=log_config)
         if self.radar_enabled:
-            self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file, log_level=log_level)
+            self.radar_event_dispatcher = RadarEventDispatcher(self.data_queue, log=log_radar, log_file=radar_log_file, log_level=log_level, log_config=log_config)
 
         self.logger = logging.getLogger('debug_combined')
 
