@@ -12,7 +12,7 @@ class LogParser(Process):
         Process.__init__(self)
         self.callback = callback
         self.log_config = self.parse_config(log_config)
-        self.logs = self.generate_logs(log_file)
+        self.log_file = log_file
         #Currently log parsing adds around 0.01 sec of overhead so we need to adjust our sleeps for this
         #self.log_overhead_adjustment = 0.05
 
@@ -71,7 +71,7 @@ class LogParser(Process):
         the log file. Assumes that logs from the log_file are saved
         in json format.
         """
-        current_logs = []
+        # current_logs = []
         for line in open(log_file, 'r'):
             # only look at valid lines
             if not self.validate_log_line(line):
@@ -88,24 +88,28 @@ class LogParser(Process):
                 "time": date_obj,       # entire datetime obj
                 "data": data            # data from original msg
             }
-            current_logs.append(data_dict)
-        return current_logs
+            yield data_dict
+        #     current_logs.append(data_dict)
+        # return current_logs
 
     def run(self):
         """ Emit the log data in real-time. """
 
-        start_real = dt.datetime.now()
-        start_log = self.logs[0]['time']
-        diff = (start_real - start_log).total_seconds()
-        print 'Diff', diff
-
+        first_run = True
         # iterate throuhg a list of dictionaries
-        i = 0
-        while i < len(self.logs):
-            sec_diff = (dt.datetime.now() - self.logs[i]['time']).total_seconds()
+        for log in self.generate_logs(self.log_file):
+            if first_run:
+                start_real = dt.datetime.now()
+                start_log = log['time']
+                diff = (start_real - start_log).total_seconds()
+                print 'Diff', diff
+                first_run = False
 
-            if sec_diff >= diff:
-                self.callback(self.logs[i]['data'])
-                i = i + 1
-            else:
-                time.sleep(0.005)
+            while True:
+                sec_diff = (dt.datetime.now() - log['time']).total_seconds()
+
+                if sec_diff >= diff:
+                    self.callback(log['data'])
+                    break
+                else:
+                    time.sleep(0.005)
