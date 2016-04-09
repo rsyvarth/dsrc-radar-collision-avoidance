@@ -22,6 +22,8 @@ class VideoOverlayVisualizer(object):
         """
         self.camera = cv2.VideoCapture(videofile)
         self.fps = self.camera.get(cv2.CAP_PROP_FPS)
+        self.video_width = self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.video_height = self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
         self.distance_behind_radar = distance_behind_radar
         self.distance_beside_radar = distance_beside_radar
@@ -60,7 +62,6 @@ class VideoOverlayVisualizer(object):
 
         cv2.imshow("Data Visualizer", img)
         return True
-        # key = cv2.waitKey(1) & 0xFF
 
     def draw_box_for_track(self, track, img):
         # HACK FOR A VER OFFSET FOR NOW
