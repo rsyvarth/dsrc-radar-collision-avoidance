@@ -79,7 +79,7 @@ class VideoOverlayVisualizer(object):
 
         # Step 3
         # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
-        obj_range, obj_angle = self.convert_radar_to_camera(track_range, track_angle, self.distance_behind_radar, self.distance_beside_radar, 0)
+        obj_range, obj_angle = self.convert_radar_to_camera(track_range, track_angle, self.distance_behind_radar, self.distance_beside_radar, self.camera_angle)
         #print "obj_range: " + str(obj_range) + ", track_range: "+str(track_range)
         pixel_width = ((self.focal_length) * (track_width) *
 img_width) / ((obj_range) * (self.sensor_size))
@@ -111,6 +111,6 @@ img_width) / ((obj_range) * (self.sensor_size))
             obj_range = math.sqrt(math.pow(triangle_opposite, 2) + math.pow(triangle_adj, 2))
             #obj_angle = math.atan(triangle_opposite / triangle_adj)
             obj_angle = math.acos(triangle_adj / obj_range)
-            obj_angle = math.degrees(obj_angle)
+            obj_angle = math.degrees(obj_angle) + camera_angle
             obj_angle = obj_angle - 90
             return obj_range, obj_angle

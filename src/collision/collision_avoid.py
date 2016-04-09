@@ -59,10 +59,10 @@ class CollisionAvoidance(Process):
             return
 
         # Init vizualizers
-        # self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 94.4, \
-        # 21.0/1000, 4.55/1000)
-        self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 64.6, \
-        28.0/1000, 4.55/1000)
+        self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.2, 3.4, 94.4, \
+        21.0/1000, 4.55/1000)
+        # self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 64.6, \
+        # 28.0/1000, 4.55/1000)
         self.position_windows()
 
         delay_remainder = 0.0;
