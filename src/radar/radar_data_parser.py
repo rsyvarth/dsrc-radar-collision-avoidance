@@ -228,11 +228,12 @@ class RadarDataParser(Process):
         self.data["switched_battery_ad"] = msg[0]
         self.data["ignition_ad"] = msg[1]
         self.data["thermistor_1_ad"] = msg[2]
-        self.data["thermistor_2_ad"] = msg[3]
-        self.data["5va_supply_ad"] = msg[4]
-        self.data["5vdx_supply_ad"] = msg[5]
-        self.data["3.3v_supply_ad"] = msg[6]
-        self.data["10v_supply_ad"] = msg[7]
+        if len(msg) > 3:
+            self.data["thermistor_2_ad"] = msg[3]
+            self.data["5va_supply_ad"] = msg[4]
+            self.data["5vdx_supply_ad"] = msg[5]
+            self.data["3.3v_supply_ad"] = msg[6]
+            self.data["10v_supply_ad"] = msg[7]
 
     def additional_status_two(self, msg):
         """
