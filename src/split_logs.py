@@ -14,6 +14,7 @@ def main():
     """ Main application entry point. """
     parser = argparse.ArgumentParser()
     parser.add_argument('--visualize', dest='visualize_dir', help="Path to directory to load all vizualization info from")
+    parser.add_argument('--overwrite', dest='overwrite', default=False, action='store_true', help="Overwrite existing logs parts if found")
     args = parser.parse_args()
     if not args.visualize_dir:
         print "Missing required argument, --visualize"
@@ -32,11 +33,12 @@ def main():
         print "---------------------------------------"
         print " Writing log to %s" % part_path
         print "---------------------------------------"
-        if os.path.exists(part_path):
+        if not args.overwrite and os.path.exists(part_path):
             print "Log already exists, skipping..."
             continue
-            
-        os.makedirs(part_path)
+
+        if not os.path.exists(part_path):
+            os.makedirs(part_path)
 
         export_part_video(part, part_path, video_file)
         export_part_log(part, part_path + '/radar.log', radar_log_file, config['video_start'])
