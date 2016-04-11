@@ -1,4 +1,4 @@
-
+import copy
 
 def test_one():
     data = dict()
@@ -87,9 +87,14 @@ def main():
     test_two()
     test_three()
 
+#15/30 looks pretty chill
+#SET_TOTAL = 30
+#SETS_IN = 15
+#SET_TOTAL = 20
+#SETS_IN = 10
+SET_TOTAL = 24
+SETS_IN = 12
 
-SET_TOTAL = 3
-SETS_IN = 2
 #list of dictionaries
 kalman_old_data = [{} for k in range(SET_TOTAL)]
 
@@ -116,15 +121,25 @@ def kalman_filter(data):
     #print "here is appended_list : " + str(appended_list)
     for ent in appended_list:
         count = 0
+        #doing a deep copy so i dont store the averaged data in kalman_old_data
         track_number = ent['track_number']
+        new_ent = copy.deepcopy(ent)
+        new_ent[track_number + '_track_range'] = 0
+        new_ent[track_number + '_track_angle'] = 0
         for i in range(0,SET_TOTAL):
             if track_number in kalman_old_data[i]:
                 count += 1
+                new_ent[track_number + '_track_range'] += ent[track_number + '_track_range']
+                new_ent[track_number + '_track_angle'] += ent[track_number + '_track_angle']
+                #new_ent[track_number + '_track_power'] += ent[track_number + '_track_power']
                 #print "incrementing count to: " + str(count)
 
         if count >= SETS_IN and (not (track_number in new_entities_hash)):
-            new_entities_list.append(ent)
-            new_entities_hash[track_number] = 1
+            new_ent[track_number + '_track_range'] /= count
+            new_ent[track_number + '_track_angle'] /= count
+            #new_ent[track_number + '_track_power'] /= count
+            new_entities_list.append(new_ent)
+            new_entities_hash[track_number] = new_ent
 
     #construct a hash of unfilitered data, makes it easier to test for existence
     #in next function call
