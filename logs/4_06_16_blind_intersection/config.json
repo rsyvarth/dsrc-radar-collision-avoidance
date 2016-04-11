@@ -1,3 +1,17 @@
 {
-	"video_start": "2016-04-06 15:48:57.300000"
+	"video_start": "2016-04-06 15:48:57.300000",
+	"parts": [
+		{
+			"start": 0,
+			"end": 10,
+			"name": "first_ten_secs"
+		}, {
+			"start": 11,
+			"end": 20,
+			"name": "second_ten_secs"
+		}, {
+			"start": 21,
+			"end": 30
+		}
+	]
 }
