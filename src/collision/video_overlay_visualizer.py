@@ -34,6 +34,9 @@ class VideoOverlayVisualizer(object):
         img = np.zeros((IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS), np.uint8)
         cv2.imshow("Data Visualizer", img)
 
+        self.prev_gps = None
+        self.latest_dsrc_box = None
+
     def update(self, current_state):
         """
         To draw on the object:
@@ -58,31 +61,59 @@ class VideoOverlayVisualizer(object):
             track_objects = current_state["radar"]["entities"]
 
         for track in track_objects:
-            self.draw_box_for_track(track, img)
+            track_number = track["track_number"]
+            #track_width = track[track_number+"_track_width"]
+            track_width = 0.2
+            track_range = track[track_number+"_track_range"]
+            track_angle = track[track_number+"_track_angle"]
+
+            self.draw_box_for_obj(img, track_width, track_range, track_angle)
+
+        if (current_state and current_state["dsrc"] and len(current_state["dsrc"]["remote_messages"])):
+            remote = current_state["dsrc"]["remote_messages"][0]
+            local = current_state["dsrc"]["message"]
+
+            if not self.prev_gps:
+                self.prev_gps = (local['long'], local['lat'])
+
+            dist_from_prev = self.calc_gps_distance((local['long'], local['lat']), self.prev_gps)
+            if dist_from_prev > 0.2 and local['long'] != self.prev_gps[0]:
+                local_bearing = math.atan((local['lat'] - self.prev_gps[1])/(local['long'] - self.prev_gps[0]))
+                if local['long'] - self.prev_gps[0] < 0:
+                    local_bearing = local_bearing + math.pi/2
+
+                bearing_relative_remote = math.atan((remote['lat'] - local['lat'])/(remote['long'] - local['long']))
+                if remote['long'] - local['long'] < 0:
+                    bearing_relative_remote = bearing_relative_remote + math.pi/2
+
+                angle = math.degrees(bearing_relative_remote - local_bearing)
+                dist = self.calc_gps_distance((local['long'], local['lat']), (remote['long'], remote['lat']))
+
+                self.latest_dsrc_box = (dist - 4, angle)
+
+            if self.latest_dsrc_box:
+                self.draw_box_for_obj(img, 0.2, self.latest_dsrc_box[0], self.latest_dsrc_box[1], color = (255, 0, 0))
+
+            # Update prev_gps for next round if necessary
+            dist_from_prev = self.calc_gps_distance((local['long'], local['lat']), self.prev_gps)
+            if dist_from_prev > 5.0:
+                self.prev_gps = (local['long'], local['lat'])
 
         cv2.imshow("Data Visualizer", img)
         return True
 
-    def draw_box_for_track(self, track, img):
+    def draw_box_for_obj(self, img, obj_width, obj_range, obj_angle, color = (0, 255, 0)):
         # HACK FOR A VER OFFSET FOR NOW
         vertical_offset = 70
-
-        # Step 1
-        track_number = track["track_number"]
-        #track_width = track[track_number+"_track_width"]
-        track_width = 0.2
-        track_range = track[track_number+"_track_range"]
-        track_angle = track[track_number+"_track_angle"]
 
         # Step 2
         img_height, img_width = img.shape[:2]
 
         # Step 3
-        # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (track_range(mm) * sensor width(mm)?)
-        obj_range, obj_angle = self.convert_radar_to_camera(track_range, track_angle, self.distance_behind_radar, self.distance_beside_radar, self.camera_angle)
-        #print "obj_range: " + str(obj_range) + ", track_range: "+str(track_range)
-        pixel_width = ((self.focal_length) * (track_width) *
-img_width) / ((obj_range) * (self.sensor_size))
+        # Formula using: obj_width(pixels) = (focal length(mm) * obj width(mm) * img_width(pixels)) / (obj_range(mm) * sensor width(mm)?)
+        obj_range, obj_angle = self.convert_obj_to_camera(obj_range, obj_angle, self.distance_behind_radar, self.distance_beside_radar, self.camera_angle)
+        #print "obj_range: " + str(obj_range) + ", obj_range: "+str(obj_range)
+        pixel_width = ((self.focal_length) * (obj_width) * img_width) / ((obj_range) * (self.sensor_size))
         #print "Pixel width: " + str((pixel_width, self.focal_length, img_width, obj_range, self.sensor_size))
 
         # Step 4
@@ -101,16 +132,31 @@ img_width) / ((obj_range) * (self.sensor_size))
         bottom_right = (int(img_right_side), int(img_bottom + vertical_offset))
 
         # Step 6
-        cv2.rectangle(img, top_left, bottom_right, (0, 255, 0), 3)
+        cv2.rectangle(img, top_left, bottom_right, color, 3)
         #print "Top left: " + str(top_left)
         #print "Bottom right: " + str(bottom_right)
 
-    def convert_radar_to_camera(self, track_range, track_angle, distance_behind_radar, distance_beside_radar, camera_angle):
-            triangle_opposite = distance_behind_radar + (track_range * math.cos(math.radians(track_angle)))
-            triangle_adj = distance_beside_radar + (track_range * math.sin(math.radians(track_angle)))
-            obj_range = math.sqrt(math.pow(triangle_opposite, 2) + math.pow(triangle_adj, 2))
-            #obj_angle = math.atan(triangle_opposite / triangle_adj)
-            obj_angle = math.acos(triangle_adj / obj_range)
-            obj_angle = math.degrees(obj_angle) + camera_angle
-            obj_angle = obj_angle - 90
-            return obj_range, obj_angle
+    def convert_obj_to_camera(self, obj_range, obj_angle, distance_behind_radar, distance_beside_radar, camera_angle):
+        triangle_opposite = distance_behind_radar + (obj_range * math.cos(math.radians(obj_angle)))
+        triangle_adj = distance_beside_radar + (obj_range * math.sin(math.radians(obj_angle)))
+        obj_range = math.sqrt(math.pow(triangle_opposite, 2) + math.pow(triangle_adj, 2))
+        #obj_angle = math.atan(triangle_opposite / triangle_adj)
+        obj_angle = math.acos(triangle_adj / obj_range)
+        obj_angle = math.degrees(obj_angle) + camera_angle
+        obj_angle = obj_angle - 90
+        return obj_range, obj_angle
+
+    def calc_gps_distance(self, new, old):
+        lon1, lat1 = new
+        lon2, lat2 = old
+
+        # convert decimal degrees to radians
+        lon1, lat1, lon2, lat2 = map(math.radians, [lon1, lat1, lon2, lat2])
+
+        # haversine formula
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        c = 2 * math.asin(math.sqrt(a))
+        r = 6371 # Radius of earth in kilometers. Use 3956 for miles
+        return c * r * 1000 # conv to meters
