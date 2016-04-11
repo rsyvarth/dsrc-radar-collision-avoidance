@@ -42,9 +42,6 @@ class LogParser(Process):
         if 'video_start' in self.log_config and date_obj < self.log_config['video_start']:
             return False
 
-        if 'end' in self.log_config and date_obj > self.log_config['end']:
-            return False
-
         return True
 
     def parse_config(self, config_file):
@@ -57,9 +54,6 @@ class LogParser(Process):
 
             if 'video_start' in data:
                 data['video_start'] = dt.datetime.strptime(data['video_start'], '%Y-%m-%d %H:%M:%S.%f')
-
-            if 'end' in data:
-                data['end'] = dt.datetime.strptime(data['end'], '%Y-%m-%d %H:%M:%S.%f')
 
             print data
             return data
