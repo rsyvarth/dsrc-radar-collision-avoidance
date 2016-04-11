@@ -29,8 +29,14 @@ def main():
 
     for index, part in enumerate(config['parts']):
         part_path = args.visualize_dir + '/' + (part['name'] if 'name' in part else 'part_%s' % index)
-        if not os.path.exists(part_path):
-            os.makedirs(part_path)
+        print "---------------------------------------"
+        print " Writing log to %s" % part_path
+        print "---------------------------------------"
+        if os.path.exists(part_path):
+            print "Log already exists, skipping..."
+            continue
+            
+        os.makedirs(part_path)
 
         export_part_video(part, part_path, video_file)
         export_part_log(part, part_path + '/radar.log', radar_log_file, config['video_start'])
