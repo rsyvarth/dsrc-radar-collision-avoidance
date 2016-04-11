@@ -123,21 +123,24 @@ def kalman_filter(data):
         count = 0
         #doing a deep copy so i dont store the averaged data in kalman_old_data
         track_number = ent['track_number']
-        new_ent = copy.deepcopy(ent)
+        #new_ent = copy.deepcopy(ent)
+        new_ent = dict()
+        new_ent['track_number'] = track_number
         new_ent[track_number + '_track_range'] = 0
         new_ent[track_number + '_track_angle'] = 0
+        new_ent[track_number + '_track_power'] = 0
         for i in range(0,SET_TOTAL):
             if track_number in kalman_old_data[i]:
                 count += 1
                 new_ent[track_number + '_track_range'] += ent[track_number + '_track_range']
                 new_ent[track_number + '_track_angle'] += ent[track_number + '_track_angle']
-                #new_ent[track_number + '_track_power'] += ent[track_number + '_track_power']
+                new_ent[track_number + '_track_power'] += ent[track_number + '_track_power']
                 #print "incrementing count to: " + str(count)
 
         if count >= SETS_IN and (not (track_number in new_entities_hash)):
             new_ent[track_number + '_track_range'] /= count
             new_ent[track_number + '_track_angle'] /= count
-            #new_ent[track_number + '_track_power'] /= count
+            new_ent[track_number + '_track_power'] /= count
             new_entities_list.append(new_ent)
             new_entities_hash[track_number] = new_ent
 
