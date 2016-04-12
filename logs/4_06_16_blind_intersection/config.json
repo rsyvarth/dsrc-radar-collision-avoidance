@@ -9,9 +9,8 @@
 			"start": 11,
 			"end": 20,
 			"name": "second_ten_secs"
-		}, {
-			"start": 21,
-			"end": 30
 		}
-	]
+	],
+	"parts_auto_enabled": true,
+	"parts_auto_interval": 60
 }
