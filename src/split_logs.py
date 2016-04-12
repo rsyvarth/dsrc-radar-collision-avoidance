@@ -9,6 +9,8 @@ import datetime
 import os
 import json
 import cv2
+import subprocess
+
 
 def main():
     """ Main application entry point. """
@@ -26,10 +28,30 @@ def main():
     log_config = args.visualize_dir + '/config.json'
 
     config = parse_config(log_config)
-    print config
+
+    if 'parts_auto_enabled' in config and config['parts_auto_enabled']:
+        cap = cv2.VideoCapture(video_file)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        duration = float(frames) / fps
+        cap.release()
+
+        print 'Video duration: %s' % duration
+        start = 0
+        count = 1
+        while start < duration:
+            config['parts'].append({
+                'start': start,
+                'end': start + config['parts_auto_interval'],
+                'name': 'auto_part_%s' % count
+            })
+            count = count + 1
+            start = start + config['parts_auto_interval']
+
+    print config 
 
     for index, part in enumerate(config['parts']):
-        part_path = args.visualize_dir + '/' + (part['name'] if 'name' in part else 'part_%s' % index)
+        part_path = args.visualize_dir + '/' + (part['name'] if 'name' in part else 'part_%s' % (index+1))
         print "---------------------------------------"
         print " Writing log to %s" % part_path
         print "---------------------------------------"
@@ -77,7 +99,8 @@ def export_part_video(part, part_path, video_file):
     video_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     video_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
-    out = cv2.VideoWriter(part_path + '/video.mp4', -1, fps, (int(video_width), int(video_height)))
+    codec = cv2.VideoWriter_fourcc('X','V','I','D')
+    out = cv2.VideoWriter(part_path + '/video.avi', codec, fps, (int(video_width), int(video_height)))
 
     while cap.get(cv2.CAP_PROP_POS_MSEC) < part['start'] * 1000:
         cap.grab() # skip frames
@@ -96,6 +119,12 @@ def export_part_video(part, part_path, video_file):
     # Release everything if job is finished
     cap.release()
     out.release()
+
+    # Hack to convert the avi we just outputted into an mp4
+    dir = part_path + '/video'
+    command = "avconv -y -i %s.avi -c:v libx264 -c:a copy %s.mp4" % (dir, dir)
+    subprocess.call(command.split())
+    os.remove(part_path + '/video.avi')
 
 def parse_config(config_file):
     with open(config_file, 'r') as content_file:
