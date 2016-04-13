@@ -8,6 +8,8 @@ except ImportError:
 IMG_WIDTH = 512
 IMG_HEIGHT = 512
 IMG_CHANNELS = 3
+COMBINED_RADIUS = 0.5
+COMBINED_ANGLE = 0.5
 
 class VideoOverlayVisualizer(object):
     def __init__(self, videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
@@ -60,15 +62,6 @@ class VideoOverlayVisualizer(object):
         if (current_state and current_state["radar"]):
             track_objects = current_state["radar"]["entities"]
 
-        for track in track_objects:
-            track_number = track["track_number"]
-            #track_width = track[track_number+"_track_width"]
-            track_width = 0.2
-            track_range = track[track_number+"_track_range"]
-            track_angle = track[track_number+"_track_angle"]
-
-            self.draw_box_for_obj(img, track_width, track_range, track_angle)
-
         if (current_state and current_state["dsrc"] and len(current_state["dsrc"]["remote_messages"])):
             remote = current_state["dsrc"]["remote_messages"][0]
             local = current_state["dsrc"]["message"]
@@ -77,7 +70,7 @@ class VideoOverlayVisualizer(object):
                 self.prev_gps = (local['long'], local['lat'])
 
             dist_from_prev = self.calc_gps_distance((local['long'], local['lat']), self.prev_gps)
-            if dist_from_prev > 0.2 and local['long'] != self.prev_gps[0]:
+            if dist_from_prev > 0.2 and local['long'] != self.prev_gps[0] and remote['long'] != local['long']:
                 local_bearing = math.atan((local['lat'] - self.prev_gps[1])/(local['long'] - self.prev_gps[0]))
                 if local['long'] - self.prev_gps[0] < 0:
                     local_bearing = local_bearing + math.pi/2
@@ -98,6 +91,18 @@ class VideoOverlayVisualizer(object):
             dist_from_prev = self.calc_gps_distance((local['long'], local['lat']), self.prev_gps)
             if dist_from_prev > 5.0:
                 self.prev_gps = (local['long'], local['lat'])
+
+        for track in track_objects:
+            track_number = track["track_number"]
+            #track_width = track[track_number+"_track_width"]
+            track_width = 0.2
+            track_range = track[track_number+"_track_range"]
+            track_angle = track[track_number+"_track_angle"]
+            if self.calc_distance((track_range, track_angle), self.latest_dsrc_box) < COMBINED_RADIUS:
+                self.draw_box_for_obj(img, track_width, track_range, track_angle, \
+                    (0,0,255))
+            else:
+                self.draw_box_for_obj(img, track_width, track_range, track_angle)
 
         cv2.imshow("Data Visualizer", img)
         return True
@@ -160,3 +165,13 @@ class VideoOverlayVisualizer(object):
         c = 2 * math.asin(math.sqrt(a))
         r = 6371 # Radius of earth in kilometers. Use 3956 for miles
         return c * r * 1000 # conv to meters
+
+    def calc_distance(self, tuple_distance_angle_one, tuple_distance_angle_two):
+        x1 = tuple_distance_angle_one[0] * math.cos(math.radians(tuple_distance_angle_one[1]))
+        y1 = tuple_distance_angle_one[0] * math.sin(math.radians(tuple_distance_angle_one[1]))
+        x2 = tuple_distance_angle_two[0] * math.cos(math.radians(tuple_distance_angle_two[1]))
+        y2 = tuple_distance_angle_two[0] * math.sin(math.radians(tuple_distance_angle_two[1]))
+        # Calculate the distance between the 2 vectors
+        new_x = math.fabs(x2 - x1)
+        new_y = math.fabs(y2 - y1)
+        return math.sqrt(math.pow(new_x, 2) + math.pow(new_y, 2))
