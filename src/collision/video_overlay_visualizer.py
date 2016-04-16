@@ -167,6 +167,8 @@ class VideoOverlayVisualizer(object):
         return c * r * 1000 # conv to meters
 
     def calc_distance(self, tuple_distance_angle_one, tuple_distance_angle_two):
+        if not tuple_distance_angle_one or not tuple_distance_angle_two:
+            return 99999999 #return something huge
         x1 = tuple_distance_angle_one[0] * math.cos(math.radians(tuple_distance_angle_one[1]))
         y1 = tuple_distance_angle_one[0] * math.sin(math.radians(tuple_distance_angle_one[1]))
         x2 = tuple_distance_angle_two[0] * math.cos(math.radians(tuple_distance_angle_two[1]))
