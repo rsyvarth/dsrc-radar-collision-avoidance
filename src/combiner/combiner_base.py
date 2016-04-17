@@ -7,8 +7,10 @@ from multiprocessing import Queue
 from Queue import Empty
 from combiner.location_filter import location_filter
 from combiner.kalman_filter import kalman_filter
+from combiner.kalman_filter2 import kalman_filter2
 
-KALMAN_FILTER = 1;
+KALMAN_FILTER = 0;
+KALMAN_FILTER2 = 1;
 LOCATION_FILTER = 1;
 
 class Combiner(object):
@@ -213,6 +215,8 @@ class Combiner(object):
         if self.dsrc_data and self.radar_data:
             if KALMAN_FILTER:
                 data = kalman_filter(data)
+            if KALMAN_FILTER2:
+                data = kalman_filter2(data)
             if LOCATION_FILTER:
                 data = location_filter(data)
         # Send updated information back to our callback function (Collision Avoidance)
