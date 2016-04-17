@@ -84,13 +84,13 @@ class VideoOverlayVisualizer(object):
 
                 self.latest_dsrc_box = (dist - 4, angle)
 
-            if self.latest_dsrc_box:
-                self.draw_box_for_obj(img, 0.2, self.latest_dsrc_box[0], self.latest_dsrc_box[1], color = (255, 0, 0))
-
             # Update prev_gps for next round if necessary
             dist_from_prev = self.calc_gps_distance((local['long'], local['lat']), self.prev_gps)
             if dist_from_prev > 5.0:
                 self.prev_gps = (local['long'], local['lat'])
+
+        if self.latest_dsrc_box:
+            self.draw_box_for_obj(img, 0.2, self.latest_dsrc_box[0], self.latest_dsrc_box[1], color = (255, 0, 0))
 
         for track in track_objects:
             track_number = track["track_number"]
