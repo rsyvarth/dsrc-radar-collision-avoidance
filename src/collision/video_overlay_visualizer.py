@@ -12,7 +12,7 @@ COMBINED_RADIUS = 0.5
 COMBINED_ANGLE = 0.5
 
 class VideoOverlayVisualizer(object):
-    def __init__(self, videofile, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
+    def __init__(self, videofile, export_interval, export_path, distance_behind_radar, distance_beside_radar, camera_angle, camera_field_of_view, focal_length, sensor_size):
         """
         videopath: path to video that we will be using for image processing
         distance_behind_radar: how far the camera is behind the radar in the vehicle (m)
@@ -38,6 +38,9 @@ class VideoOverlayVisualizer(object):
 
         self.prev_gps = None
         self.latest_dsrc_box = None
+        self.last_exported_frame = 0
+        self.export_interval = export_interval
+        self.export_path = export_path
 
     def update(self, current_state):
         """
@@ -105,6 +108,13 @@ class VideoOverlayVisualizer(object):
                 self.draw_box_for_obj(img, track_width, track_range, track_angle)
 
         cv2.imshow("Data Visualizer", img)
+
+        # Save frames to disk for analysis
+        if self.export_path and self.camera.get(cv2.CAP_PROP_POS_MSEC) - self.last_exported_frame > self.export_interval:
+            print "EXPORTING"
+            self.last_exported_frame = self.camera.get(cv2.CAP_PROP_POS_MSEC)
+            cv2.imwrite(self.export_path + "/%s.jpg" % int(self.last_exported_frame), img) 
+
         return True
 
     def draw_box_for_obj(self, img, obj_width, obj_range, obj_angle, color = (0, 255, 0)):

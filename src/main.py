@@ -69,6 +69,7 @@ import canlib
 import logging
 import argparse
 from multiprocessing import Queue
+import os
 
 from combiner.combiner_base import Combiner
 from collision.collision_avoid import CollisionAvoidance
@@ -88,7 +89,9 @@ def main():
 
     # Init the collision avoidance class
     if args.visualize_dir:
-        collision_avoid = CollisionAvoidance(collision_avoid_queue, args.video_file)
+        collision_avoid = CollisionAvoidance(collision_avoid_queue, args.video_file, 
+            int(args.export_interval), args.export_path)
+
         collision_avoid.start()
 
     # Setup the Combiner to call collision_avoid.new_data_handler every time new data is available!
@@ -145,9 +148,14 @@ def parse_args():
                         dest='visualize_dir',
                         help="Path to directory to load all vizualization info from\
                         (equivalent of passing load-dsrc-log, load-radar-log, load-video)")
-    # parser.set_defaults(log_radar=True,
-    #                     log_level=True,
-    #                     debug_level=logging.DEBUG,
+    parser.add_argument('--export_interval',
+                        dest='export_interval',
+                        default=1000,
+                        help="Interval to take screenshots of output")
+    parser.add_argument('--export_path',
+                        dest='export_path',
+                        help="Path to put screenshots in")
+
 
     args = parser.parse_args()
 
@@ -156,6 +164,9 @@ def parse_args():
         args.radar_log_file = args.visualize_dir + '/radar.log'
         args.video_file = args.visualize_dir + '/video.mp4'
         args.log_config = args.visualize_dir + '/config.json'
+
+    if args.export_path and not os.path.exists(args.export_path):
+            os.makedirs(args.export_path)
 
     return args
 

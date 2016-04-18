@@ -26,11 +26,13 @@ class CollisionAvoidance(Process):
     collisions displaying warnings in a simple UI.
     """
 
-    def __init__(self, queue, video_file):
+    def __init__(self, queue, video_file, export_interval, export_directory):
         """Setup the CA class, just empty state for now"""
         Process.__init__(self)
         self.queue = queue
         self.video_file = video_file
+        self.export_interval = export_interval
+        self.export_directory = export_directory
         self.current_state = None
         self.constants = CollisionConstants()
         signal.signal(signal.SIGINT, self.signal_handler)
@@ -59,8 +61,9 @@ class CollisionAvoidance(Process):
             return
 
         # Init vizualizers
-        self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.2, 3.4, 94.4, \
+        self.video_viz = VideoOverlayVisualizer(self.video_file, self.export_interval, self.export_directory, 1.2446, -0.2, 3.4, 94.4, \
         21.0/1000, 4.55/1000)
+
         # self.video_viz = VideoOverlayVisualizer(self.video_file, 1.2446, -0.4, 0, 64.6, \
         # 28.0/1000, 4.55/1000)
         self.position_windows()
