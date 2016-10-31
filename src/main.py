@@ -34,7 +34,7 @@ Software Overview:
     avoidance system.
 
     DSRC - The DSRC package is split up into 3 main components. There are 2 parsers:
-    the data parser which handles polling the DSRC REST API for new information
+    the data parser which handles the UDP log packets written by the DSRC
     and the log parser which reads previously logged events and replays them in
     real time. The log parser is useful in application testing since it lets us
     recreate a sequence of events in our code that we previously recorded using
